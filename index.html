@@ -33,9 +33,8 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sn);-webkit-font
 .field label{font-family:var(--mo);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
 .field input{background:var(--paper2);border:1px solid var(--bd);border-radius:9px;padding:11px 14px;font-family:var(--sn);font-size:14px;color:var(--ink);outline:none;transition:border-color .2s;width:100%}
 .field input:focus{border-color:var(--ink2)}.field input::placeholder{color:var(--ink4)}
-.dz{border:1px dashed var(--bd2);border-radius:18px;padding:2.75rem 2rem;text-align:center;cursor:pointer;transition:all .25s var(--ez);position:relative;background:var(--paper);margin-bottom:1.25rem}
+.dz{border:1px dashed var(--bd2);border-radius:18px;padding:2.75rem 2rem;text-align:center;cursor:pointer;transition:all .25s var(--ez);background:var(--paper);margin-bottom:1.25rem}
 .dz:hover,.dz.drag{border-color:var(--em);background:var(--eml)}
-.dz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .dz-iw{width:52px;height:52px;border-radius:14px;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;background:var(--paper2);transition:all .25s var(--ez)}
 .dz:hover .dz-iw,.dz.drag .dz-iw{border-color:var(--em);background:var(--eml)}
 .dz-iw svg{width:22px;height:22px;stroke:var(--ink3);transition:stroke .25s}
@@ -152,7 +151,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sn);-webkit-font
       <div class="hdr-t">Conformite <em>CEE</em></div>
     </div>
     <div class="hdr-m">
-      <div class="hdr-v">v4.1 - CDC Officiel</div>
+      <div class="hdr-v">v4.2 - CDC Officiel</div>
       <div class="hdr-f">BAT-EQ-127</div>
     </div>
   </div>
@@ -169,11 +168,11 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sn);-webkit-font
       <div class="field"><label>Beneficiaire</label><input id="benI" type="text" placeholder="Optionnel"></div>
     </div>
     <div class="dz" id="dz">
-      <input type="file" id="fi" multiple accept=".pdf,.jpg,.jpeg,.png">
       <div class="dz-iw"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12M8 8l4-4 4 4"/></svg></div>
-      <div class="dz-t">Deposer les pieces du dossier ici</div>
+      <div class="dz-t">Cliquer ou deposer les fichiers ici</div>
       <div class="dz-s">PDF - PNG - JPEG - plusieurs fichiers a la fois</div>
     </div>
+    <input type="file" id="fi" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none">
     <div class="chips" id="chL"></div>
     <button class="btn-p" id="goBtn" disabled>
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -218,42 +217,88 @@ const DT2=[{v:'devis',l:'Devis'},{v:'facture',l:'Facture'},{v:'ah',l:'Attestatio
 const DET=[{v:'audit',k:['audit','energetique','bilan de puissance','liste de luminaire']},{v:'devis',k:['devis','offre','proposition']},{v:'facture',k:['facture','invoice']},{v:'ah',k:['honneur','attestation sur','cadre a']},{v:'aft',k:['fin de travaux','fin travaux']},{v:'rge',k:['rge','qualibat','qualifelec','reconnu garant']},{v:'fiche_tech',k:['fiche technique','datasheet']},{v:'avis_insee',k:['avis de situation','insee','siren','siret']},{v:'photos',k:['photo','horodate','geolocalis']},{v:'cadastre',k:['cadastre','parcelle','extrait']},{v:'att_tampon',k:['absence de tampon']}];
 const I={ck:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>',x:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',wn:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',ds:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12"/></svg>',rm:'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>',dc:'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',cv:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>'};
 const SI={'Documents':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>','Configuration':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 18.66l-1.41 1.41M22 12h-2M4 12H2M12 22v-2M12 4V2"/></svg>','Regles BAT-EQ-127':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>','Coherence':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>','Validation finale':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'};
+
 const files=[]; let mapped=[];
-const dzEl=document.getElementById('dz'),fiEl=document.getElementById('fi'),chLEl=document.getElementById('chL'),goBtnEl=document.getElementById('goBtn');
+const dzEl=document.getElementById('dz');
+const fiEl=document.getElementById('fi');
+const chLEl=document.getElementById('chL');
+const goBtnEl=document.getElementById('goBtn');
+
 function fsz(b){if(b<1024)return b+'o';if(b<1048576)return Math.round(b/1024)+'Ko';return(b/1048576).toFixed(1)+'Mo'}
-function rChips(){chLEl.innerHTML=files.map((f,i)=>'<div class="chip"><div class="chip-i">'+I.dc+'</div><span class="chip-n">'+f.name+'</span><span class="chip-s">'+fsz(f.size)+'</span><button class="chip-r" onclick="rmF('+i+')">'+I.rm+'</button></div>').join('');goBtnEl.disabled=files.length===0}
-window.rmF=i=>{files.splice(i,1);rChips()};
-function addF(nf){for(const f of nf)if(!files.find(x=>x.name===f.name))files.push(f);rChips()}
-fiEl.addEventListener('change',e=>addF(e.target.files));
-dzEl.addEventListener('dragover',e=>{e.preventDefault();dzEl.classList.add('drag')});
-dzEl.addEventListener('dragleave',()=>dzEl.classList.remove('drag'));
-dzEl.addEventListener('drop',e=>{e.preventDefault();dzEl.classList.remove('drag');addF(e.dataTransfer.files)});
+
+function rChips(){
+  chLEl.innerHTML=files.map((f,i)=>'<div class="chip"><div class="chip-i">'+I.dc+'</div><span class="chip-n">'+f.name+'</span><span class="chip-s">'+fsz(f.size)+'</span><button class="chip-r" onclick="rmF('+i+')">'+I.rm+'</button></div>').join('');
+  goBtnEl.disabled=files.length===0;
+}
+window.rmF=function(i){files.splice(i,1);rChips()};
+
+function addF(newFiles){
+  for(const f of newFiles){
+    if(!files.find(x=>x.name===f.name)) files.push(f);
+  }
+  rChips();
+}
+
+// FILE INPUT - use both 'change' and 'input' events for max compatibility
+fiEl.addEventListener('change',function(e){
+  if(e.target.files && e.target.files.length > 0){
+    addF(Array.from(e.target.files));
+  }
+});
+
+// DROPZONE click => open file picker
+dzEl.addEventListener('click',function(){
+  fiEl.value='';
+  fiEl.click();
+});
+
+// DRAG AND DROP
+dzEl.addEventListener('dragover',function(e){e.preventDefault();e.stopPropagation();dzEl.classList.add('drag')});
+dzEl.addEventListener('dragleave',function(e){e.stopPropagation();dzEl.classList.remove('drag')});
+dzEl.addEventListener('drop',function(e){
+  e.preventDefault();e.stopPropagation();
+  dzEl.classList.remove('drag');
+  if(e.dataTransfer.files && e.dataTransfer.files.length > 0){
+    addF(Array.from(e.dataTransfer.files));
+  }
+});
+
 function setStep(n){[1,2,3].forEach(i=>{const el=document.getElementById('s'+i);el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');const ln=document.getElementById('sl'+i);if(ln)ln.classList.toggle('done',i<n)})}
 function showS(n){[1,2,3].forEach(i=>document.getElementById('scr'+i).classList.toggle('hidden',i!==n));setStep(n);window.scrollTo({top:0,behavior:'smooth'})}
+
 async function callAI(msgs,mt){
   const r=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:mt||600,messages:msgs})});
   const d=await r.json();if(d.error)throw new Error(JSON.stringify(d.error));
   return(d.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
 }
-goBtnEl.addEventListener('click',async()=>{
+
+goBtnEl.addEventListener('click',async function(){
   goBtnEl.disabled=true;
   goBtnEl.innerHTML='<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0"></div> Detection IA...';
   try{
     const raw=await callAI([{role:'user',content:'Expert CEE BAT-EQ-127. Deduis le type de chaque fichier. Fichiers: '+files.map((f,i)=>i+'."'+f.name+'"').join(', ')+'. Types: devis,facture,ah,aft,audit,rge,fiche_tech,avis_insee,photos,cadastre,att_tampon,autre,"". JSON uniquement: {"r":[{"i":0,"t":"...","c":"high|mid|none"}]}'}]);
     const res=JSON.parse(raw).r;
     mapped=files.map((f,i)=>{let t='',c='none';if(res&&res[i]){t=res[i].t||'';c=res[i].c||'none'}else{const r=DET.find(d=>d.k.some(k=>f.name.toLowerCase().includes(k)));if(r){t=r.v;c='mid'}}return{file:f,type:t,conf:c}});
-  }catch{mapped=files.map(f=>{const r=DET.find(d=>d.k.some(k=>f.name.toLowerCase().includes(k)));return{file:f,type:r?r.v:'',conf:r?'mid':'none'}})}
-  goBtnEl.disabled=false;goBtnEl.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Suivant';
+  }catch(e){
+    mapped=files.map(f=>{const r=DET.find(d=>d.k.some(k=>f.name.toLowerCase().includes(k)));return{file:f,type:r?r.v:'',conf:r?'mid':'none'}});
+  }
+  goBtnEl.disabled=false;
+  goBtnEl.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Suivant';
   showS(2);rMap();rSide();
 });
-document.getElementById('bkBtn').addEventListener('click',()=>showS(1));
-document.getElementById('bk2Btn').addEventListener('click',()=>{files.length=0;rChips();showS(1)});
+
+document.getElementById('bkBtn').addEventListener('click',function(){showS(1)});
+document.getElementById('bk2Btn').addEventListener('click',function(){files.length=0;rChips();showS(1)});
+
 function rMap(){document.getElementById('mRows').innerHTML=mapped.map((m,i)=>{const pc=m.type?(m.conf==='high'?'aip-h':'aip-m'):'aip-n';const pt=m.type?(m.conf==='high'?'IA ok':'IA ~'):'?';const opts=DT.map(t=>'<option value="'+t.v+'"'+(m.type===t.v?' selected':'')+'>'+t.l+(t.r?' *':'')+'</option>').join('');return'<div class="fr"><div class="fr-n"><span class="fr-fn">'+m.file.name+'</span><span class="aip '+pc+'">'+pt+'</span></div><div class="fr-sz">'+fsz(m.file.size)+'</div><div><select class="fr-sel '+(m.type?'ok':'empty')+'" id="sel'+i+'" onchange="upd('+i+',this.value)">'+opts+'</select></div><button class="fr-rm" onclick="rmM('+i+')">'+I.rm+'</button></div>'}).join('')}
-window.upd=(i,v)=>{mapped[i].type=v;mapped[i].conf='high';const s=document.getElementById('sel'+i);if(s)s.className='fr-sel '+(v?'ok':'empty');rSide()};
-window.rmM=i=>{mapped.splice(i,1);files.splice(i,1);rMap();rSide()};
+window.upd=function(i,v){mapped[i].type=v;mapped[i].conf='high';const s=document.getElementById('sel'+i);if(s)s.className='fr-sel '+(v?'ok':'empty');rSide()};
+window.rmM=function(i){mapped.splice(i,1);files.splice(i,1);rMap();rSide()};
+
 function rSide(){const asgn=mapped.map(m=>m.type);let ok=0;document.getElementById('scL').innerHTML=DT2.map(d=>{const n=asgn.filter(a=>a===d.v).length;const isOk=n>0;if(isOk)ok++;const dc=isOk?(d.m?'sc-d-ml':'sc-d-ok'):'sc-d-miss';return'<div class="sc-i'+(isOk?' asgn':'')+'"><div class="sc-d '+dc+'"></div><span class="sc-n">'+d.l+(d.m?' (multi)':'')+'</span>'+(n>1?'<span class="sc-c">'+n+'x</span>':'')+'</div>'}).join('');const pct=Math.round(ok/10*100);document.getElementById('scPF').style.width=pct+'%';document.getElementById('scPT').textContent=ok+' / 10 requis'}
+
 function toB64(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f)})}
-document.getElementById('laBtn').addEventListener('click',async()=>{
+
+document.getElementById('laBtn').addEventListener('click',async function(){
   const nom=document.getElementById('nomI').value.trim()||'Dossier sans nom';
   const ben=document.getElementById('benI').value.trim();
   const valid=mapped.filter(m=>m.type&&m.type!=='autre');
@@ -261,17 +306,26 @@ document.getElementById('laBtn').addEventListener('click',async()=>{
   showS(3);
   document.getElementById('rZ').innerHTML='<div class="lw"><div class="lr"></div><div class="lt">Lecture des documents...</div><div class="lf" id="ldF"></div></div>';
   const content=[];
-  for(const m of valid){const el=document.getElementById('ldF');if(el)el.textContent='-> '+m.file.name;try{const b64=await toB64(m.file);content.push({type:'document',source:{type:'base64',media_type:m.file.type==='application/pdf'?'application/pdf':'image/jpeg',data:b64},title:'['+(DT.find(t=>t.v===m.type)?.l||m.type)+'] '+m.file.name})}catch(e){console.warn(e)}}
+  for(const m of valid){
+    const el=document.getElementById('ldF');if(el)el.textContent='-> '+m.file.name;
+    try{const b64=await toB64(m.file);content.push({type:'document',source:{type:'base64',media_type:m.file.type==='application/pdf'?'application/pdf':'image/jpeg',data:b64},title:'['+(DT.find(t=>t.v===m.type)?.l||m.type)+'] '+m.file.name})}catch(e){console.warn(e)}
+  }
   const el2=document.getElementById('ldF');if(el2)el2.textContent='Analyse de conformite en cours...';
-  content.push({type:'text',text:'Controleur expert CEE BAT-EQ-127. Dossier: '+nom+(ben?'\nBeneficiaire: '+ben:'')+'.\nDocuments:\n'+valid.map(m=>'- '+(DT.find(t=>t.v===m.type)?.l)+': '+m.file.name).join('\n')+'\n\nREGLE: une seule incoherence = NON conforme.\nCDC: Audit(tampon+signe BE+beneficiaire), Devis(date+signe+cachet), Facture, AH(cadres A), AFT(tampon+signe), RGE(valide date devis eclairage nom=audit), Fiche tech(REF=facture), Avis INSEE, Photos(horodatees geoloc dates coherentes), Cadastre. Regles: nb pieces p5=p6 BLOQUANT, LED identique(moins ok facture), RGE nom=audit, ref=fiche. Coherence: beneficiaire adresse parcelles dates(sig=date haut ou date devis) photos facture+AH designation surfaces tampon.\n\nJSON: {"fiche":"BAT-EQ-127","titre":"Luminaires a modules LED","confiance":1-5,"statut":"conforme|non_conforme|a_controler","verdict":"PRET A ETRE VERIFIE|NON CONFORME A CORRIGER|A CONTROLER MANUELLEMENT","alerte":["..."],"synthese":"...","sections":[{"nom":"Documents","criteres":[{"label":"Audit energetique","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Devis","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Facture","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Attestation sur l'Honneur","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Attestation de Fin de Travaux","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Certificat RGE","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Fiche technique","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Avis de situation INSEE","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Photos horodatees","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Extrait cadastral","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null}]},{"nom":"Configuration","criteres":[{"label":"Parcelles","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Batiments","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Surfaces","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Cadres A AH","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null}]},{"nom":"Regles BAT-EQ-127","criteres":[{"label":"Nb pieces p5=p6","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"LED identique(facture inferieur etude ok)","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"RGE BE nom=audit","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"RGE valide date devis eclairage","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Ref facture=fiche technique","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Donnees techniques coherentes","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null}]},{"nom":"Coherence","criteres":[{"label":"Beneficiaire identique","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Adresse identique","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Parcelles identiques","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Dates coherentes","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Date sig audit=date audit ou devis","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Date photos=facture+AH","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Designation travaux identique","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Surfaces identiques","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Tampon ou att absence","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Secteur activite coherent","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null}]},{"nom":"Validation finale","criteres":[{"label":"Lisibilite documents","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Signatures dates tampons","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Dossier complet coherent","status":"ok|ko","detail":"...","trouve":null,"attendu":null}]}]}'});
-  try{const raw=await callAI(content,3000);rRes(JSON.parse(raw),nom)}
-  catch(e){document.getElementById('rZ').innerHTML='<div style="padding:2rem;font-family:var(--mo);font-size:12px;color:var(--cr)">Erreur: '+e.message+'</div>'}
+  content.push({type:'text',text:'Controleur expert CEE BAT-EQ-127. Dossier: '+nom+(ben?'\nBeneficiaire: '+ben:'')+'.\nDocuments:\n'+valid.map(m=>'- '+(DT.find(t=>t.v===m.type)?.l)+': '+m.file.name).join('\n')+'\n\nREGLE: une seule incoherence = NON conforme.\nCDC: Audit(tampon+signe BE+beneficiaire), Devis(date+signe+cachet), Facture, AH(cadres A), AFT(tampon+signe), RGE(valide date devis eclairage nom=audit), Fiche tech(REF=facture), Avis INSEE, Photos(horodatees geoloc dates coherentes), Cadastre. Regles: nb pieces p5=p6 BLOQUANT, LED identique(moins ok facture), RGE nom=audit, ref=fiche. Coherence: beneficiaire adresse parcelles dates(sig=date haut ou date devis) photos facture+AH designation surfaces tampon.\n\nJSON uniquement sans backtick: {"fiche":"BAT-EQ-127","titre":"Luminaires a modules LED","confiance":1-5,"statut":"conforme|non_conforme|a_controler","verdict":"PRET A ETRE VERIFIE|NON CONFORME A CORRIGER|A CONTROLER MANUELLEMENT","alerte":["..."],"synthese":"...","sections":[{"nom":"Documents","criteres":[{"label":"Audit energetique","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Devis","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Facture","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Attestation sur l'Honneur","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Attestation de Fin de Travaux","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Certificat RGE","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Fiche technique","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Avis de situation INSEE","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Photos horodatees","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Extrait cadastral","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null}]},{"nom":"Configuration","criteres":[{"label":"Parcelles","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Batiments","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Surfaces","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Cadres A AH","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null}]},{"nom":"Regles BAT-EQ-127","criteres":[{"label":"Nb pieces p5=p6","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"LED identique(facture inferieur ok)","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"RGE BE nom=audit","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"RGE valide date devis eclairage","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Ref facture=fiche technique","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Donnees techniques coherentes","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null}]},{"nom":"Coherence","criteres":[{"label":"Beneficiaire identique","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Adresse identique","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Parcelles identiques","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Dates coherentes","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Date sig audit=date audit ou devis","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Date photos=facture+AH","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Designation travaux identique","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Surfaces identiques","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Tampon ou att absence","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Secteur activite coherent","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null}]},{"nom":"Validation finale","criteres":[{"label":"Lisibilite documents","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Signatures dates tampons","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Dossier complet coherent","status":"ok|ko","detail":"...","trouve":null,"attendu":null}]}]}'});
+  try{
+    const raw=await callAI(content,3000);
+    rRes(JSON.parse(raw),nom);
+  }catch(e){
+    document.getElementById('rZ').innerHTML='<div style="padding:2rem;font-family:var(--mo);font-size:12px;color:var(--cr)">Erreur: '+e.message+'</div>';
+  }
 });
-window.tSec=i=>{document.getElementById('sb'+i)?.classList.toggle('open');document.getElementById('sh'+i)?.classList.toggle('open');document.getElementById('sv'+i)?.classList.toggle('open')};
+
+window.tSec=function(i){document.getElementById('sb'+i)?.classList.toggle('open');document.getElementById('sh'+i)?.classList.toggle('open');document.getElementById('sv'+i)?.classList.toggle('open')};
 function ico(s){return{ok:I.ck,ko:I.x,warn:I.wn,missing:I.ds}[s]||I.ds}
 function bdg(s){const m={ok:'cb-ok Conforme',ko:'cb-ko Non conforme',warn:'cb-wn A verifier',missing:'cb-ms Non trouve'};const p=(m[s]||'cb-ms Non trouve').split(' ');return'<span class="cbdg '+p[0]+'">'+p.slice(1).join(' ')+'</span>'}
 function cdots(n){return[1,2,3,4,5].map(i=>'<div class="cdot '+(i<=n?'on':'off')+'"></div>').join('')}
 function cLbl(n){return['','Faible','Basse','Moyenne','Elevee','Tres elevee'][n]||''}
+
 function rRes(r,nom){
   const st=r.statut||'a_controler';
   let tOk=0,tKo=0,tWn=0;
