@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle IA CEE BAT-EQ-127</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0A0A0B;--ink2:#3D3D40;--ink3:#8A8A90;--ink4:#C4C4C8;--paper:#FAFAF9;--paper2:#F3F3F1;--paper3:#EAEAE7;--em:#1A6B4A;--eml:#E8F5EF;--am:#7A4A00;--aml:#FEF3E2;--cr:#7A1515;--crl:#FEE8E8;--bl:#185FA5;--bd:rgba(10,10,11,0.08);--bd2:rgba(10,10,11,0.15);--sf:'Playfair Display',Georgia,serif;--mo:'JetBrains Mono',monospace;--sn:'DM Sans',system-ui,sans-serif;--ez:cubic-bezier(0.23,1,0.32,1)}
+body{background:var(--paper);color:var(--ink);font-family:var(--sn);-webkit-font-smoothing:antialiased;min-height:100vh}
+.page{max-width:780px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2.5rem;animation:fadeUp .6s var(--ez) both}
+.hdr-ey{font-family:var(--mo);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--em);margin-bottom:.5rem;display:flex;align-items:center;gap:8px}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--em);animation:blink 2s infinite}
+.hdr-t{font-family:var(--sf);font-size:32px;font-weight:500;line-height:1.15;letter-spacing:-.01em}
+.hdr-t em{font-style:italic;color:var(--em)}
+.hdr-m{text-align:right}
+.hdr-v{font-family:var(--mo);font-size:10px;color:var(--ink3);letter-spacing:.06em}
+.hdr-f{font-family:var(--mo);font-size:14px;font-weight:500;letter-spacing:.04em;margin-top:2px}
+.screen{animation:fadeUp .4s var(--ez) both}.screen.hidden{display:none!important}
+.step-rail{display:flex;align-items:center;margin-bottom:2.5rem}
+.step{display:flex;align-items:center;gap:9px;font-family:var(--mo);font-size:11px;letter-spacing:.05em;color:var(--ink3);transition:color .3s}
+.step-n{width:27px;height:27px;border-radius:50%;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;background:var(--paper);transition:all .35s var(--ez);flex-shrink:0}
+.step.active{color:var(--ink)}.step.active .step-n{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.step.done{color:var(--em)}.step.done .step-n{background:var(--em);color:white;border-color:var(--em)}
+.step-line{flex:1;height:1px;background:var(--bd2);margin:0 14px;transition:background .4s}.step-line.done{background:var(--em)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-family:var(--mo);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.field input{background:var(--paper2);border:1px solid var(--bd);border-radius:9px;padding:11px 14px;font-family:var(--sn);font-size:14px;color:var(--ink);outline:none;transition:border-color .2s;width:100%}
+.field input:focus{border-color:var(--ink2)}.field input::placeholder{color:var(--ink4)}
+.dz{border:1px dashed var(--bd2);border-radius:18px;padding:2.75rem 2rem;text-align:center;cursor:pointer;transition:all .25s var(--ez);position:relative;background:var(--paper);margin-bottom:1.25rem}
+.dz:hover,.dz.drag{border-color:var(--em);background:var(--eml)}
+.dz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dz-iw{width:52px;height:52px;border-radius:14px;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;background:var(--paper2);transition:all .25s var(--ez)}
+.dz:hover .dz-iw,.dz.drag .dz-iw{border-color:var(--em);background:var(--eml)}
+.dz-iw svg{width:22px;height:22px;stroke:var(--ink3);transition:stroke .25s}
+.dz:hover .dz-iw svg,.dz.drag .dz-iw svg{stroke:var(--em)}
+.dz-t{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:5px}
+.dz-s{font-family:var(--mo);font-size:11px;color:var(--ink3)}
+.chips{display:flex;flex-direction:column;gap:7px;margin-bottom:1.5rem}
+.chip{display:flex;align-items:center;gap:10px;background:var(--paper2);border:1px solid var(--bd);border-radius:11px;padding:10px 14px}
+.chip-i{width:30px;height:30px;border-radius:8px;background:var(--paper3);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chip-i svg{width:15px;height:15px;stroke:var(--ink3)}
+.chip-n{font-family:var(--mo);font-size:12px;color:var(--ink);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip-s{font-family:var(--mo);font-size:10px;color:var(--ink3)}
+.chip-r{background:none;border:none;cursor:pointer;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--ink4);transition:all .15s}
+.chip-r:hover{background:var(--crl);color:var(--cr)}.chip-r svg{width:13px;height:13px;stroke:currentColor}
+.btn-p{width:100%;padding:14px 20px;border:none;border-radius:11px;background:var(--ink);color:var(--paper);font-family:var(--sn);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s var(--ez);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-p:hover:not(:disabled){opacity:.82;transform:translateY(-1px)}
+.btn-p:disabled{background:var(--paper3);color:var(--ink4);cursor:not-allowed}
+.btn-g{background:transparent;border:1px solid var(--bd2);border-radius:10px;padding:11px 18px;font-family:var(--sn);font-size:13px;color:var(--ink2);cursor:pointer;transition:all .2s}
+.btn-g:hover{border-color:var(--ink2);color:var(--ink)}
+.mg{display:grid;grid-template-columns:1fr 210px;gap:16px;align-items:start}
+.slbl{font-family:var(--mo);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.8rem}
+.nreq{font-family:var(--mo);font-size:10px;color:var(--cr);margin-bottom:1rem}
+.fbt{background:var(--paper);border:1px solid var(--bd);border-radius:13px;overflow:hidden}
+.fbt-h{display:grid;grid-template-columns:1fr 72px 1fr 30px;padding:9px 14px;border-bottom:1px solid var(--bd);background:var(--paper2)}
+.fth{font-family:var(--mo);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.fr{display:grid;grid-template-columns:1fr 72px 1fr 30px;padding:11px 14px;border-bottom:1px solid var(--bd);align-items:center;transition:background .15s}
+.fr:last-child{border-bottom:none}.fr:hover{background:var(--paper2)}
+.fr-n{display:flex;align-items:center;gap:8px;min-width:0}
+.fr-fn{font-family:var(--mo);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.aip{display:inline-flex;align-items:center;font-family:var(--mo);font-size:9px;padding:2px 7px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.aip-h{background:var(--eml);color:var(--em)}.aip-m{background:var(--aml);color:var(--am)}.aip-n{background:var(--crl);color:var(--cr)}
+.fr-sz{font-family:var(--mo);font-size:10px;color:var(--ink3)}
+.fr-sel{width:100%;background:var(--paper2);border:1px solid var(--bd);border-radius:8px;padding:7px 10px;font-family:var(--sn);font-size:11px;color:var(--ink);outline:none;cursor:pointer}
+.fr-sel.ok{border-color:var(--em);color:var(--em)}.fr-sel.empty{border-color:var(--cr)}
+.fr-rm{background:none;border:none;cursor:pointer;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--ink4);transition:all .15s}
+.fr-rm:hover{background:var(--crl);color:var(--cr)}.fr-rm svg{width:12px;height:12px;stroke:currentColor}
+.sc{background:var(--paper);border:1px solid var(--bd);border-radius:13px;padding:15px;position:sticky;top:1rem}
+.sc-t{font-family:var(--mo);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:12px}
+.sc-i{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)}.sc-i:last-child{border-bottom:none}
+.sc-d{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sc-d-ok{background:var(--em)}.sc-d-miss{background:var(--bd2)}.sc-d-ml{background:var(--bl)}
+.sc-n{font-family:var(--mo);font-size:10px;color:var(--ink3);flex:1}.sc-i.asgn .sc-n{color:var(--ink)}
+.sc-c{font-family:var(--mo);font-size:9px;color:var(--ink3)}
+.sc-pg{margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)}
+.sc-pl{font-family:var(--mo);font-size:9px;color:var(--ink3);margin-bottom:7px}
+.sc-b{height:3px;background:var(--bd);border-radius:2px;overflow:hidden}
+.sc-f{height:100%;background:var(--em);border-radius:2px;transition:width .4s var(--ez)}
+.lw{display:flex;flex-direction:column;align-items:center;gap:18px;padding:3.5rem;background:var(--paper);border:1px solid var(--bd);border-radius:18px}
+.lr{width:42px;height:42px;border:2px solid var(--bd);border-top-color:var(--ink);border-radius:50%;animation:spin .75s linear infinite}
+.lt{font-family:var(--mo);font-size:12px;color:var(--ink3);text-align:center}
+.lf{font-family:var(--mo);font-size:11px;color:var(--em)}
+.r-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--bd)}
+.r-dos{font-family:var(--sf);font-size:24px;font-weight:500}
+.r-fi{font-family:var(--mo);font-size:11px;color:var(--ink3);margin-top:3px;letter-spacing:.04em}
+.vbdg{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:22px;font-family:var(--mo);font-size:11px;font-weight:500;letter-spacing:.04em}
+.vb-ok{background:var(--eml);color:var(--em);border:1px solid rgba(29,107,60,.2)}
+.vb-ko{background:var(--crl);color:var(--cr);border:1px solid rgba(180,30,30,.2)}
+.vb-wn{background:var(--aml);color:var(--am);border:1px solid rgba(180,110,0,.2)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:1.5rem}
+.sb{background:var(--paper2);border:1px solid var(--bd);border-radius:11px;padding:16px;text-align:center}
+.sbn{font-family:var(--sf);font-size:32px;font-weight:500;line-height:1}
+.sbl{font-family:var(--mo);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-top:5px}
+.sb-ok .sbn{color:var(--em)}.sb-wn .sbn{color:var(--am)}.sb-ko .sbn{color:var(--cr)}
+.cfs{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;padding:13px 16px;background:var(--paper2);border:1px solid var(--bd);border-radius:11px}
+.cfl{font-family:var(--mo);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);flex:1}
+.cfd{display:flex;gap:4px}.cdot{width:10px;height:10px;border-radius:50%}.cdot.on{background:var(--ink)}.cdot.off{background:var(--bd2)}
+.cfv{font-family:var(--mo);font-size:11px;color:var(--ink2)}
+.vban{padding:14px 18px;border-radius:11px;margin-bottom:1.25rem;font-family:var(--mo);font-size:12px;font-weight:500;letter-spacing:.04em;display:flex;align-items:center;gap:10px}
+.vban-ok{background:var(--eml);color:var(--em)}.vban-ko{background:var(--crl);color:var(--cr)}
+.vband{width:8px;height:8px;border-radius:50%;background:currentColor;flex-shrink:0}
+.syn{padding:14px 16px;background:var(--paper2);border-left:2.5px solid var(--ink);margin-bottom:1.25rem;border-radius:0 9px 9px 0;font-size:13px;color:var(--ink2);line-height:1.75}
+.alrt{padding:13px 16px;background:var(--aml);border:1px solid rgba(180,110,0,.18);border-radius:11px;margin-bottom:1.25rem;font-size:12px;color:var(--am);line-height:1.7}
+.alrt ul{padding-left:16px;margin-top:5px}
+.secs{display:flex;flex-direction:column;gap:8px}
+.sec-c{background:var(--paper);border:1px solid var(--bd);border-radius:13px;overflow:hidden}
+.sec-h{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;transition:background .15s;user-select:none}
+.sec-h:hover{background:var(--paper2)}.sec-h.open{border-bottom:1px solid var(--bd)}
+.sec-ic{width:30px;height:30px;border-radius:8px;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--paper2)}
+.sec-ic svg{width:14px;height:14px;stroke:var(--ink3)}
+.sec-nm{font-family:var(--sn);font-size:13px;font-weight:500;flex:1}
+.sec-sc{font-family:var(--mo);font-size:11px;color:var(--ink3)}
+.ko-t{color:var(--cr)}.wn-t{color:var(--am)}
+.sec-cv{color:var(--ink3);transition:transform .22s var(--ez);flex-shrink:0}.sec-cv.open{transform:rotate(90deg)}
+.sec-cv svg{width:13px;height:13px;stroke:currentColor}
+.sec-bd{display:none;padding:10px 14px;flex-direction:column;gap:6px}.sec-bd.open{display:flex}
+.crit{display:flex;align-items:flex-start;gap:10px;padding:9px 11px;border-radius:9px;background:var(--paper2)}
+.crit-ic{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.crit-ic svg{width:9px;height:9px;stroke-width:2.5}
+.crit-ic.ok{background:var(--eml)}.crit-ic.ok svg{stroke:var(--em)}
+.crit-ic.ko{background:var(--crl)}.crit-ic.ko svg{stroke:var(--cr)}
+.crit-ic.warn{background:var(--aml)}.crit-ic.warn svg{stroke:var(--am)}
+.crit-ic.miss{background:var(--paper3)}.crit-ic.miss svg{stroke:var(--ink3)}
+.crit-b{flex:1}.crit-l{font-size:12px;font-weight:500;line-height:1.4}
+.crit-d{font-family:var(--mo);font-size:10px;color:var(--ink3);margin-top:3px;line-height:1.6}
+.d-fo{color:var(--cr)}.d-ex{color:var(--em)}
+.cbdg{font-family:var(--mo);font-size:9px;padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;align-self:flex-start;margin-top:2px}
+.cb-ok{background:var(--eml);color:var(--em)}.cb-ko{background:var(--crl);color:var(--cr)}
+.cb-wn{background:var(--aml);color:var(--am)}.cb-ms{background:var(--paper3);color:var(--ink3)}
+.act{display:flex;gap:9px;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--bd)}
+.btn-a{flex:1;padding:11px 14px;border-radius:9px;font-family:var(--sn);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid var(--bd2);background:var(--paper);color:var(--ink2)}
+.btn-a:hover{border-color:var(--ink2);color:var(--ink);background:var(--paper2)}
+.btn-a.em{background:var(--ink);color:var(--paper);border-color:var(--ink)}.btn-a.em:hover{opacity:.85}
+.back-r{margin-bottom:1.5rem}
+.back-b{background:none;border:none;cursor:pointer;font-family:var(--mo);font-size:11px;color:var(--ink3);display:flex;align-items:center;gap:6px;transition:color .15s;padding:0}
+.back-b:hover{color:var(--ink)}.back-b svg{width:14px;height:14px;stroke:currentColor}
+.btr{display:flex;gap:9px;margin-top:1rem}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="hdr">
+    <div>
+      <div class="hdr-ey"><div class="ldot"></div>Controle IA - Actif</div>
+      <div class="hdr-t">Conformite <em>CEE</em></div>
+    </div>
+    <div class="hdr-m">
+      <div class="hdr-v">v4.1 - CDC Officiel</div>
+      <div class="hdr-f">BAT-EQ-127</div>
+    </div>
+  </div>
+  <div class="step-rail">
+    <div class="step active" id="s1"><div class="step-n">1</div><span>Import</span></div>
+    <div class="step-line" id="sl1"></div>
+    <div class="step" id="s2"><div class="step-n">2</div><span>Mapping</span></div>
+    <div class="step-line" id="sl2"></div>
+    <div class="step" id="s3"><div class="step-n">3</div><span>Analyse</span></div>
+  </div>
+  <div class="screen" id="scr1">
+    <div class="field-row">
+      <div class="field"><label>Nom du dossier</label><input id="nomI" type="text" placeholder="ex: Giraud Transport - Roissy"></div>
+      <div class="field"><label>Beneficiaire</label><input id="benI" type="text" placeholder="Optionnel"></div>
+    </div>
+    <div class="dz" id="dz">
+      <input type="file" id="fi" multiple accept=".pdf,.jpg,.jpeg,.png">
+      <div class="dz-iw"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12M8 8l4-4 4 4"/></svg></div>
+      <div class="dz-t">Deposer les pieces du dossier ici</div>
+      <div class="dz-s">PDF - PNG - JPEG - plusieurs fichiers a la fois</div>
+    </div>
+    <div class="chips" id="chL"></div>
+    <button class="btn-p" id="goBtn" disabled>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Suivant - Assigner les types
+    </button>
+  </div>
+  <div class="screen hidden" id="scr2">
+    <div class="slbl">Assignez un type a chaque document</div>
+    <div class="nreq">* Requis - les fichiers non assignes sont ignores</div>
+    <div class="mg">
+      <div>
+        <div class="fbt">
+          <div class="fbt-h"><span class="fth">Fichier</span><span class="fth">Taille</span><span class="fth">Type detecte</span><span></span></div>
+          <div id="mRows"></div>
+        </div>
+        <div class="btr">
+          <button class="btn-g" id="bkBtn">Retour</button>
+          <button class="btn-p" id="laBtn" style="flex:1">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z"/></svg>
+            Lancer l'analyse
+          </button>
+        </div>
+      </div>
+      <div class="sc">
+        <div class="sc-t">Documents BAT-EQ-127</div>
+        <div id="scL"></div>
+        <div class="sc-pg">
+          <div class="sc-pl" id="scPT">0 / 10 requis</div>
+          <div class="sc-b"><div class="sc-f" id="scPF" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="screen hidden" id="scr3">
+    <div class="back-r"><button class="back-b" id="bk2Btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Nouveau dossier</button></div>
+    <div id="rZ"></div>
+  </div>
+</div>
+<script>
+const DT=[{v:'',l:'Non assigne',r:false},{v:'devis',l:'Devis',r:true},{v:'facture',l:'Facture',r:true},{v:'ah',l:"Attestation Honneur",r:true},{v:'aft',l:'Attestation Fin Travaux',r:true},{v:'audit',l:'Audit energetique',r:true},{v:'rge',l:'Certificat RGE',r:true,m:true},{v:'fiche_tech',l:'Fiche technique',r:true,m:true},{v:'avis_insee',l:'Avis de situation INSEE',r:true},{v:'photos',l:'Photos horodatees',r:true,m:true},{v:'cadastre',l:'Extrait cadastral',r:true,m:true},{v:'att_tampon',l:'Att. absence tampon',r:false},{v:'autre',l:'Autre',r:false}];
+const DT2=[{v:'devis',l:'Devis'},{v:'facture',l:'Facture'},{v:'ah',l:'Attestation Honneur'},{v:'aft',l:'Attestation Fin Travaux'},{v:'audit',l:'Audit energetique'},{v:'rge',l:'Certificat RGE',m:true},{v:'fiche_tech',l:'Fiche technique',m:true},{v:'avis_insee',l:'Avis situation INSEE'},{v:'photos',l:'Photos horodatees',m:true},{v:'cadastre',l:'Extrait cadastral',m:true}];
+const DET=[{v:'audit',k:['audit','energetique','bilan de puissance','liste de luminaire']},{v:'devis',k:['devis','offre','proposition']},{v:'facture',k:['facture','invoice']},{v:'ah',k:['honneur','attestation sur','cadre a']},{v:'aft',k:['fin de travaux','fin travaux']},{v:'rge',k:['rge','qualibat','qualifelec','reconnu garant']},{v:'fiche_tech',k:['fiche technique','datasheet']},{v:'avis_insee',k:['avis de situation','insee','siren','siret']},{v:'photos',k:['photo','horodate','geolocalis']},{v:'cadastre',k:['cadastre','parcelle','extrait']},{v:'att_tampon',k:['absence de tampon']}];
+const I={ck:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>',x:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',wn:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',ds:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12"/></svg>',rm:'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>',dc:'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',cv:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>'};
+const SI={'Documents':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>','Configuration':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 18.66l-1.41 1.41M22 12h-2M4 12H2M12 22v-2M12 4V2"/></svg>','Regles BAT-EQ-127':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>','Coherence':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>','Validation finale':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'};
+const files=[]; let mapped=[];
+const dzEl=document.getElementById('dz'),fiEl=document.getElementById('fi'),chLEl=document.getElementById('chL'),goBtnEl=document.getElementById('goBtn');
+function fsz(b){if(b<1024)return b+'o';if(b<1048576)return Math.round(b/1024)+'Ko';return(b/1048576).toFixed(1)+'Mo'}
+function rChips(){chLEl.innerHTML=files.map((f,i)=>'<div class="chip"><div class="chip-i">'+I.dc+'</div><span class="chip-n">'+f.name+'</span><span class="chip-s">'+fsz(f.size)+'</span><button class="chip-r" onclick="rmF('+i+')">'+I.rm+'</button></div>').join('');goBtnEl.disabled=files.length===0}
+window.rmF=i=>{files.splice(i,1);rChips()};
+function addF(nf){for(const f of nf)if(!files.find(x=>x.name===f.name))files.push(f);rChips()}
+fiEl.addEventListener('change',e=>addF(e.target.files));
+dzEl.addEventListener('dragover',e=>{e.preventDefault();dzEl.classList.add('drag')});
+dzEl.addEventListener('dragleave',()=>dzEl.classList.remove('drag'));
+dzEl.addEventListener('drop',e=>{e.preventDefault();dzEl.classList.remove('drag');addF(e.dataTransfer.files)});
+function setStep(n){[1,2,3].forEach(i=>{const el=document.getElementById('s'+i);el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');const ln=document.getElementById('sl'+i);if(ln)ln.classList.toggle('done',i<n)})}
+function showS(n){[1,2,3].forEach(i=>document.getElementById('scr'+i).classList.toggle('hidden',i!==n));setStep(n);window.scrollTo({top:0,behavior:'smooth'})}
+async function callAI(msgs,mt){
+  const r=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:mt||600,messages:msgs})});
+  const d=await r.json();if(d.error)throw new Error(JSON.stringify(d.error));
+  return(d.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+}
+goBtnEl.addEventListener('click',async()=>{
+  goBtnEl.disabled=true;
+  goBtnEl.innerHTML='<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0"></div> Detection IA...';
+  try{
+    const raw=await callAI([{role:'user',content:'Expert CEE BAT-EQ-127. Deduis le type de chaque fichier. Fichiers: '+files.map((f,i)=>i+'."'+f.name+'"').join(', ')+'. Types: devis,facture,ah,aft,audit,rge,fiche_tech,avis_insee,photos,cadastre,att_tampon,autre,"". JSON uniquement: {"r":[{"i":0,"t":"...","c":"high|mid|none"}]}'}]);
+    const res=JSON.parse(raw).r;
+    mapped=files.map((f,i)=>{let t='',c='none';if(res&&res[i]){t=res[i].t||'';c=res[i].c||'none'}else{const r=DET.find(d=>d.k.some(k=>f.name.toLowerCase().includes(k)));if(r){t=r.v;c='mid'}}return{file:f,type:t,conf:c}});
+  }catch{mapped=files.map(f=>{const r=DET.find(d=>d.k.some(k=>f.name.toLowerCase().includes(k)));return{file:f,type:r?r.v:'',conf:r?'mid':'none'}})}
+  goBtnEl.disabled=false;goBtnEl.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Suivant';
+  showS(2);rMap();rSide();
+});
+document.getElementById('bkBtn').addEventListener('click',()=>showS(1));
+document.getElementById('bk2Btn').addEventListener('click',()=>{files.length=0;rChips();showS(1)});
+function rMap(){document.getElementById('mRows').innerHTML=mapped.map((m,i)=>{const pc=m.type?(m.conf==='high'?'aip-h':'aip-m'):'aip-n';const pt=m.type?(m.conf==='high'?'IA ok':'IA ~'):'?';const opts=DT.map(t=>'<option value="'+t.v+'"'+(m.type===t.v?' selected':'')+'>'+t.l+(t.r?' *':'')+'</option>').join('');return'<div class="fr"><div class="fr-n"><span class="fr-fn">'+m.file.name+'</span><span class="aip '+pc+'">'+pt+'</span></div><div class="fr-sz">'+fsz(m.file.size)+'</div><div><select class="fr-sel '+(m.type?'ok':'empty')+'" id="sel'+i+'" onchange="upd('+i+',this.value)">'+opts+'</select></div><button class="fr-rm" onclick="rmM('+i+')">'+I.rm+'</button></div>'}).join('')}
+window.upd=(i,v)=>{mapped[i].type=v;mapped[i].conf='high';const s=document.getElementById('sel'+i);if(s)s.className='fr-sel '+(v?'ok':'empty');rSide()};
+window.rmM=i=>{mapped.splice(i,1);files.splice(i,1);rMap();rSide()};
+function rSide(){const asgn=mapped.map(m=>m.type);let ok=0;document.getElementById('scL').innerHTML=DT2.map(d=>{const n=asgn.filter(a=>a===d.v).length;const isOk=n>0;if(isOk)ok++;const dc=isOk?(d.m?'sc-d-ml':'sc-d-ok'):'sc-d-miss';return'<div class="sc-i'+(isOk?' asgn':'')+'"><div class="sc-d '+dc+'"></div><span class="sc-n">'+d.l+(d.m?' (multi)':'')+'</span>'+(n>1?'<span class="sc-c">'+n+'x</span>':'')+'</div>'}).join('');const pct=Math.round(ok/10*100);document.getElementById('scPF').style.width=pct+'%';document.getElementById('scPT').textContent=ok+' / 10 requis'}
+function toB64(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f)})}
+document.getElementById('laBtn').addEventListener('click',async()=>{
+  const nom=document.getElementById('nomI').value.trim()||'Dossier sans nom';
+  const ben=document.getElementById('benI').value.trim();
+  const valid=mapped.filter(m=>m.type&&m.type!=='autre');
+  if(!valid.length){alert('Assignez au moins un document.');return}
+  showS(3);
+  document.getElementById('rZ').innerHTML='<div class="lw"><div class="lr"></div><div class="lt">Lecture des documents...</div><div class="lf" id="ldF"></div></div>';
+  const content=[];
+  for(const m of valid){const el=document.getElementById('ldF');if(el)el.textContent='-> '+m.file.name;try{const b64=await toB64(m.file);content.push({type:'document',source:{type:'base64',media_type:m.file.type==='application/pdf'?'application/pdf':'image/jpeg',data:b64},title:'['+(DT.find(t=>t.v===m.type)?.l||m.type)+'] '+m.file.name})}catch(e){console.warn(e)}}
+  const el2=document.getElementById('ldF');if(el2)el2.textContent='Analyse de conformite en cours...';
+  content.push({type:'text',text:'Controleur expert CEE BAT-EQ-127. Dossier: '+nom+(ben?'\nBeneficiaire: '+ben:'')+'.\nDocuments:\n'+valid.map(m=>'- '+(DT.find(t=>t.v===m.type)?.l)+': '+m.file.name).join('\n')+'\n\nREGLE: une seule incoherence = NON conforme.\nCDC: Audit(tampon+signe BE+beneficiaire), Devis(date+signe+cachet), Facture, AH(cadres A), AFT(tampon+signe), RGE(valide date devis eclairage nom=audit), Fiche tech(REF=facture), Avis INSEE, Photos(horodatees geoloc dates coherentes), Cadastre. Regles: nb pieces p5=p6 BLOQUANT, LED identique(moins ok facture), RGE nom=audit, ref=fiche. Coherence: beneficiaire adresse parcelles dates(sig=date haut ou date devis) photos facture+AH designation surfaces tampon.\n\nJSON: {"fiche":"BAT-EQ-127","titre":"Luminaires a modules LED","confiance":1-5,"statut":"conforme|non_conforme|a_controler","verdict":"PRET A ETRE VERIFIE|NON CONFORME A CORRIGER|A CONTROLER MANUELLEMENT","alerte":["..."],"synthese":"...","sections":[{"nom":"Documents","criteres":[{"label":"Audit energetique","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Devis","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Facture","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Attestation sur l'Honneur","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Attestation de Fin de Travaux","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Certificat RGE","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Fiche technique","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Avis de situation INSEE","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Photos horodatees","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Extrait cadastral","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null}]},{"nom":"Configuration","criteres":[{"label":"Parcelles","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Batiments","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Surfaces","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Cadres A AH","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null}]},{"nom":"Regles BAT-EQ-127","criteres":[{"label":"Nb pieces p5=p6","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"LED identique(facture inferieur etude ok)","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"RGE BE nom=audit","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"RGE valide date devis eclairage","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Ref facture=fiche technique","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Donnees techniques coherentes","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null}]},{"nom":"Coherence","criteres":[{"label":"Beneficiaire identique","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Adresse identique","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Parcelles identiques","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Dates coherentes","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Date sig audit=date audit ou devis","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Date photos=facture+AH","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Designation travaux identique","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Surfaces identiques","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Tampon ou att absence","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Secteur activite coherent","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null}]},{"nom":"Validation finale","criteres":[{"label":"Lisibilite documents","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Signatures dates tampons","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Dossier complet coherent","status":"ok|ko","detail":"...","trouve":null,"attendu":null}]}]}'});
+  try{const raw=await callAI(content,3000);rRes(JSON.parse(raw),nom)}
+  catch(e){document.getElementById('rZ').innerHTML='<div style="padding:2rem;font-family:var(--mo);font-size:12px;color:var(--cr)">Erreur: '+e.message+'</div>'}
+});
+window.tSec=i=>{document.getElementById('sb'+i)?.classList.toggle('open');document.getElementById('sh'+i)?.classList.toggle('open');document.getElementById('sv'+i)?.classList.toggle('open')};
+function ico(s){return{ok:I.ck,ko:I.x,warn:I.wn,missing:I.ds}[s]||I.ds}
+function bdg(s){const m={ok:'cb-ok Conforme',ko:'cb-ko Non conforme',warn:'cb-wn A verifier',missing:'cb-ms Non trouve'};const p=(m[s]||'cb-ms Non trouve').split(' ');return'<span class="cbdg '+p[0]+'">'+p.slice(1).join(' ')+'</span>'}
+function cdots(n){return[1,2,3,4,5].map(i=>'<div class="cdot '+(i<=n?'on':'off')+'"></div>').join('')}
+function cLbl(n){return['','Faible','Basse','Moyenne','Elevee','Tres elevee'][n]||''}
+function rRes(r,nom){
+  const st=r.statut||'a_controler';
+  let tOk=0,tKo=0,tWn=0;
+  (r.sections||[]).forEach(s=>(s.criteres||[]).forEach(c=>{if(c.status==='ok')tOk++;else if(c.status==='ko')tKo++;else if(c.status==='warn')tWn++}));
+  const bC=st==='conforme'?'vb-ok':st==='non_conforme'?'vb-ko':'vb-wn';
+  const bL=st==='conforme'?'Conforme':st==='non_conforme'?'Non conforme':'A controler';
+  const vbC=st==='conforme'?'vban-ok':'vban-ko';
+  const secH=(r.sections||[]).map((s,si)=>{
+    const ok=(s.criteres||[]).filter(c=>c.status==='ok').length,ko=(s.criteres||[]).filter(c=>c.status==='ko').length,wn=(s.criteres||[]).filter(c=>c.status==='warn').length,tot=(s.criteres||[]).length;
+    const sc=ok+'/'+tot+(ko?' <span class="ko-t">('+ko+' KO)</span>':'')+(wn?' <span class="wn-t">('+wn+' !)</span>':'');
+    const crits=(s.criteres||[]).map(c=>{let ex='';if(c.trouve&&c.attendu)ex='<div class="crit-d"><span class="d-fo">Trouve: '+c.trouve+'</span><br><span class="d-ex">Attendu: '+c.attendu+'</span></div>';else if(c.detail)ex='<div class="crit-d">'+c.detail+'</div>';return'<div class="crit"><div class="crit-ic '+c.status+'">'+ico(c.status)+'</div><div class="crit-b"><div class="crit-l">'+c.label+'</div>'+ex+'</div>'+bdg(c.status)+'</div>'}).join('');
+    const icn=SI[s.nom]||SI['Documents'];
+    return'<div class="sec-c"><div class="sec-h open" id="sh'+si+'" onclick="tSec('+si+')"><div class="sec-ic">'+icn+'</div><div class="sec-nm">'+s.nom+'</div><div class="sec-sc">'+sc+'</div><div class="sec-cv open" id="sv'+si+'">'+I.cv+'</div></div><div class="sec-bd open" id="sb'+si+'">'+crits+'</div></div>';
+  }).join('');
+  document.getElementById('rZ').innerHTML=
+    '<div class="r-hdr"><div><div class="r-dos">'+nom+'</div><div class="r-fi">BAT-EQ-127 - Luminaires a modules LED</div></div><span class="vbdg '+bC+'">'+bL+'</span></div>'+
+    '<div class="stats"><div class="sb sb-ok"><div class="sbn">'+tOk+'</div><div class="sbl">Conformes</div></div><div class="sb sb-wn"><div class="sbn">'+tWn+'</div><div class="sbl">A verifier</div></div><div class="sb sb-ko"><div class="sbn">'+tKo+'</div><div class="sbl">Non conformes</div></div></div>'+
+    '<div class="cfs"><div class="cfl">Confiance IA</div><div class="cfd">'+cdots(r.confiance||3)+'</div><div class="cfv">'+cLbl(r.confiance||3)+'</div></div>'+
+    (r.verdict?'<div class="vban '+vbC+'"><div class="vband"></div>'+r.verdict+'</div>':'')+
+    (r.alerte?.length?'<div class="alrt">Points a verifier manuellement<ul>'+r.alerte.map(a=>'<li>'+a+'</li>').join('')+'</ul></div>':'')+
+    (r.synthese?'<div class="syn">'+r.synthese+'</div>':'')+
+    '<div class="secs">'+secH+'</div>'+
+    '<div class="act"><button class="btn-a" onclick="window.print()">Imprimer</button><button class="btn-a em" onclick="document.getElementById('bk2Btn').click()">Nouveau dossier</button></div>';
+}
+</script>
+</body>
+</html>
