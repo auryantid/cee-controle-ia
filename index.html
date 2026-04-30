@@ -31,23 +31,23 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sn);-webkit-font
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
 .field{display:flex;flex-direction:column;gap:6px}
 .field label{font-family:var(--mo);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
-.field input{background:var(--paper2);border:1px solid var(--bd);border-radius:9px;padding:11px 14px;font-family:var(--sn);font-size:14px;color:var(--ink);outline:none;transition:border-color .2s;width:100%}
-.field input:focus{border-color:var(--ink2)}.field input::placeholder{color:var(--ink4)}
-.dz{border:1px dashed var(--bd2);border-radius:18px;padding:2.75rem 2rem;text-align:center;cursor:pointer;transition:all .25s var(--ez);background:var(--paper);margin-bottom:1.25rem}
-.dz:hover,.dz.drag{border-color:var(--em);background:var(--eml)}
-.dz-iw{width:52px;height:52px;border-radius:14px;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;background:var(--paper2);transition:all .25s var(--ez)}
-.dz:hover .dz-iw,.dz.drag .dz-iw{border-color:var(--em);background:var(--eml)}
-.dz-iw svg{width:22px;height:22px;stroke:var(--ink3);transition:stroke .25s}
-.dz:hover .dz-iw svg,.dz.drag .dz-iw svg{stroke:var(--em)}
-.dz-t{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:5px}
-.dz-s{font-family:var(--mo);font-size:11px;color:var(--ink3)}
+.field input[type=text]{background:var(--paper2);border:1px solid var(--bd);border-radius:9px;padding:11px 14px;font-family:var(--sn);font-size:14px;color:var(--ink);outline:none;transition:border-color .2s;width:100%}
+.field input[type=text]:focus{border-color:var(--ink2)}.field input[type=text]::placeholder{color:var(--ink4)}
+.upload-area{border:1.5px dashed var(--bd2);border-radius:18px;padding:2rem;text-align:center;background:var(--paper);margin-bottom:1.25rem;transition:all .25s var(--ez)}
+.upload-area.drag{border-color:var(--em);background:var(--eml)}
+.upload-icon{width:52px;height:52px;border-radius:14px;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;background:var(--paper2)}
+.upload-icon svg{width:22px;height:22px;stroke:var(--ink3)}
+.upload-t{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px}
+.upload-s{font-family:var(--mo);font-size:11px;color:var(--ink3);margin-bottom:1.25rem}
+.upload-btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--paper);border:none;border-radius:9px;padding:11px 22px;font-family:var(--sn);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;text-decoration:none}
+.upload-btn:hover{opacity:.82}
 .chips{display:flex;flex-direction:column;gap:7px;margin-bottom:1.5rem}
 .chip{display:flex;align-items:center;gap:10px;background:var(--paper2);border:1px solid var(--bd);border-radius:11px;padding:10px 14px}
 .chip-i{width:30px;height:30px;border-radius:8px;background:var(--paper3);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .chip-i svg{width:15px;height:15px;stroke:var(--ink3)}
 .chip-n{font-family:var(--mo);font-size:12px;color:var(--ink);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chip-s{font-family:var(--mo);font-size:10px;color:var(--ink3)}
-.chip-r{background:none;border:none;cursor:pointer;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--ink4);transition:all .15s}
+.chip-s{font-family:var(--mo);font-size:10px;color:var(--ink3);white-space:nowrap}
+.chip-r{background:none;border:none;cursor:pointer;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--ink4);transition:all .15s;flex-shrink:0}
 .chip-r:hover{background:var(--crl);color:var(--cr)}.chip-r svg{width:13px;height:13px;stroke:currentColor}
 .btn-p{width:100%;padding:14px 20px;border:none;border-radius:11px;background:var(--ink);color:var(--paper);font-family:var(--sn);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s var(--ez);display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-p:hover:not(:disabled){opacity:.82;transform:translateY(-1px)}
@@ -151,7 +151,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sn);-webkit-font
       <div class="hdr-t">Conformite <em>CEE</em></div>
     </div>
     <div class="hdr-m">
-      <div class="hdr-v">v4.2 - CDC Officiel</div>
+      <div class="hdr-v">v4.3 - CDC Officiel</div>
       <div class="hdr-f">BAT-EQ-127</div>
     </div>
   </div>
@@ -164,15 +164,19 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sn);-webkit-font
   </div>
   <div class="screen" id="scr1">
     <div class="field-row">
-      <div class="field"><label>Nom du dossier</label><input id="nomI" type="text" placeholder="ex: Giraud Transport - Roissy"></div>
-      <div class="field"><label>Beneficiaire</label><input id="benI" type="text" placeholder="Optionnel"></div>
+      <div class="field"><label>Nom du dossier</label><input type="text" id="nomI" placeholder="ex: Giraud Transport - Roissy"></div>
+      <div class="field"><label>Beneficiaire</label><input type="text" id="benI" placeholder="Optionnel"></div>
     </div>
-    <div class="dz" id="dz">
-      <div class="dz-iw"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12M8 8l4-4 4 4"/></svg></div>
-      <div class="dz-t">Cliquer ou deposer les fichiers ici</div>
-      <div class="dz-s">PDF - PNG - JPEG - plusieurs fichiers a la fois</div>
+    <input type="file" id="fi" multiple accept=".pdf,.jpg,.jpeg,.png" style="position:fixed;top:-999px;left:-999px;width:1px;height:1px;opacity:0">
+    <div class="upload-area" id="ua">
+      <div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12M8 8l4-4 4 4"/></svg></div>
+      <div class="upload-t">Deposez vos fichiers ici</div>
+      <div class="upload-s">PDF - PNG - JPEG - plusieurs fichiers acceptes</div>
+      <label for="fi" class="upload-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" width="15" height="15"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        Choisir les fichiers
+      </label>
     </div>
-    <input type="file" id="fi" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none">
     <div class="chips" id="chL"></div>
     <button class="btn-p" id="goBtn" disabled>
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -212,143 +216,225 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sn);-webkit-font
   </div>
 </div>
 <script>
-const DT=[{v:'',l:'Non assigne',r:false},{v:'devis',l:'Devis',r:true},{v:'facture',l:'Facture',r:true},{v:'ah',l:"Attestation Honneur",r:true},{v:'aft',l:'Attestation Fin Travaux',r:true},{v:'audit',l:'Audit energetique',r:true},{v:'rge',l:'Certificat RGE',r:true,m:true},{v:'fiche_tech',l:'Fiche technique',r:true,m:true},{v:'avis_insee',l:'Avis de situation INSEE',r:true},{v:'photos',l:'Photos horodatees',r:true,m:true},{v:'cadastre',l:'Extrait cadastral',r:true,m:true},{v:'att_tampon',l:'Att. absence tampon',r:false},{v:'autre',l:'Autre',r:false}];
-const DT2=[{v:'devis',l:'Devis'},{v:'facture',l:'Facture'},{v:'ah',l:'Attestation Honneur'},{v:'aft',l:'Attestation Fin Travaux'},{v:'audit',l:'Audit energetique'},{v:'rge',l:'Certificat RGE',m:true},{v:'fiche_tech',l:'Fiche technique',m:true},{v:'avis_insee',l:'Avis situation INSEE'},{v:'photos',l:'Photos horodatees',m:true},{v:'cadastre',l:'Extrait cadastral',m:true}];
-const DET=[{v:'audit',k:['audit','energetique','bilan de puissance','liste de luminaire']},{v:'devis',k:['devis','offre','proposition']},{v:'facture',k:['facture','invoice']},{v:'ah',k:['honneur','attestation sur','cadre a']},{v:'aft',k:['fin de travaux','fin travaux']},{v:'rge',k:['rge','qualibat','qualifelec','reconnu garant']},{v:'fiche_tech',k:['fiche technique','datasheet']},{v:'avis_insee',k:['avis de situation','insee','siren','siret']},{v:'photos',k:['photo','horodate','geolocalis']},{v:'cadastre',k:['cadastre','parcelle','extrait']},{v:'att_tampon',k:['absence de tampon']}];
-const I={ck:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>',x:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',wn:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',ds:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12"/></svg>',rm:'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>',dc:'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',cv:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>'};
-const SI={'Documents':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>','Configuration':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 18.66l-1.41 1.41M22 12h-2M4 12H2M12 22v-2M12 4V2"/></svg>','Regles BAT-EQ-127':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>','Coherence':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>','Validation finale':'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'};
+var DT=[{v:'',l:'Non assigne',r:false},{v:'devis',l:'Devis',r:true},{v:'facture',l:'Facture',r:true},{v:'ah',l:"Attestation Honneur",r:true},{v:'aft',l:'Attestation Fin Travaux',r:true},{v:'audit',l:'Audit energetique',r:true},{v:'rge',l:'Certificat RGE',r:true,m:true},{v:'fiche_tech',l:'Fiche technique',r:true,m:true},{v:'avis_insee',l:'Avis de situation INSEE',r:true},{v:'photos',l:'Photos horodatees',r:true,m:true},{v:'cadastre',l:'Extrait cadastral',r:true,m:true},{v:'att_tampon',l:'Att. absence tampon',r:false},{v:'autre',l:'Autre',r:false}];
+var DT2=[{v:'devis',l:'Devis'},{v:'facture',l:'Facture'},{v:'ah',l:'Attestation Honneur'},{v:'aft',l:'Attestation Fin Travaux'},{v:'audit',l:'Audit energetique'},{v:'rge',l:'Certificat RGE',m:true},{v:'fiche_tech',l:'Fiche technique',m:true},{v:'avis_insee',l:'Avis situation INSEE'},{v:'photos',l:'Photos horodatees',m:true},{v:'cadastre',l:'Extrait cadastral',m:true}];
+var DET=[{v:'audit',k:['audit','energetique','bilan','luminaire']},{v:'devis',k:['devis','offre','proposition']},{v:'facture',k:['facture','invoice']},{v:'ah',k:['honneur','attestation sur','cadre a']},{v:'aft',k:['fin de travaux','fin travaux']},{v:'rge',k:['rge','qualibat','qualifelec']},{v:'fiche_tech',k:['fiche technique','datasheet']},{v:'avis_insee',k:['avis de situation','insee','siren']},{v:'photos',k:['photo','horodate','geolocalis']},{v:'cadastre',k:['cadastre','parcelle','extrait']},{v:'att_tampon',k:['absence de tampon']}];
+var ICK='<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>';
+var ICX='<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+var ICW='<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+var ICD='<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+var ICR='<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>';
+var ICDC='<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+var ICV='<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>';
+var SID='<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+var SIC='<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 18.66l-1.41 1.41M22 12h-2M4 12H2M12 22v-2M12 4V2"/></svg>';
+var SIR='<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>';
+var SICH='<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>';
+var SIV='<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
+function getSI(n){if(n=='Documents')return SID;if(n=='Configuration')return SIC;if(n=='Regles BAT-EQ-127')return SIR;if(n=='Coherence')return SICH;if(n=='Validation finale')return SIV;return SID;}
 
-const files=[]; let mapped=[];
-const dzEl=document.getElementById('dz');
-const fiEl=document.getElementById('fi');
-const chLEl=document.getElementById('chL');
-const goBtnEl=document.getElementById('goBtn');
+var files=[], mapped=[];
+var fiEl=document.getElementById('fi');
+var chLEl=document.getElementById('chL');
+var goBtnEl=document.getElementById('goBtn');
+var uaEl=document.getElementById('ua');
 
 function fsz(b){if(b<1024)return b+'o';if(b<1048576)return Math.round(b/1024)+'Ko';return(b/1048576).toFixed(1)+'Mo'}
 
 function rChips(){
-  chLEl.innerHTML=files.map((f,i)=>'<div class="chip"><div class="chip-i">'+I.dc+'</div><span class="chip-n">'+f.name+'</span><span class="chip-s">'+fsz(f.size)+'</span><button class="chip-r" onclick="rmF('+i+')">'+I.rm+'</button></div>').join('');
+  var h='';
+  for(var i=0;i<files.length;i++){
+    h+='<div class="chip"><div class="chip-i">'+ICDC+'</div><span class="chip-n">'+files[i].name+'</span><span class="chip-s">'+fsz(files[i].size)+'</span><button class="chip-r" onclick="rmF('+i+')">'+ICR+'</button></div>';
+  }
+  chLEl.innerHTML=h;
   goBtnEl.disabled=files.length===0;
 }
-window.rmF=function(i){files.splice(i,1);rChips()};
+function rmF(i){files.splice(i,1);rChips();}
 
-function addF(newFiles){
-  for(const f of newFiles){
-    if(!files.find(x=>x.name===f.name)) files.push(f);
+function addF(list){
+  for(var i=0;i<list.length;i++){
+    var f=list[i];
+    var found=false;
+    for(var j=0;j<files.length;j++){if(files[j].name===f.name){found=true;break;}}
+    if(!found) files.push(f);
   }
   rChips();
 }
 
-// FILE INPUT - use both 'change' and 'input' events for max compatibility
-fiEl.addEventListener('change',function(e){
-  if(e.target.files && e.target.files.length > 0){
-    addF(Array.from(e.target.files));
+fiEl.addEventListener('change',function(){
+  if(this.files && this.files.length>0){
+    addF(Array.from(this.files));
   }
+  this.value='';
 });
 
-// DROPZONE click => open file picker
-dzEl.addEventListener('click',function(){
-  fiEl.value='';
-  fiEl.click();
+uaEl.addEventListener('dragover',function(e){e.preventDefault();e.stopPropagation();this.classList.add('drag');});
+uaEl.addEventListener('dragleave',function(e){e.stopPropagation();this.classList.remove('drag');});
+uaEl.addEventListener('drop',function(e){
+  e.preventDefault();e.stopPropagation();this.classList.remove('drag');
+  if(e.dataTransfer.files && e.dataTransfer.files.length>0){addF(Array.from(e.dataTransfer.files));}
 });
 
-// DRAG AND DROP
-dzEl.addEventListener('dragover',function(e){e.preventDefault();e.stopPropagation();dzEl.classList.add('drag')});
-dzEl.addEventListener('dragleave',function(e){e.stopPropagation();dzEl.classList.remove('drag')});
-dzEl.addEventListener('drop',function(e){
-  e.preventDefault();e.stopPropagation();
-  dzEl.classList.remove('drag');
-  if(e.dataTransfer.files && e.dataTransfer.files.length > 0){
-    addF(Array.from(e.dataTransfer.files));
+function setStep(n){
+  for(var i=1;i<=3;i++){
+    var el=document.getElementById('s'+i);
+    el.classList.remove('active','done');
+    if(i<n)el.classList.add('done');
+    else if(i===n)el.classList.add('active');
+    var ln=document.getElementById('sl'+i);
+    if(ln)ln.classList.toggle('done',i<n);
   }
-});
-
-function setStep(n){[1,2,3].forEach(i=>{const el=document.getElementById('s'+i);el.classList.remove('active','done');if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');const ln=document.getElementById('sl'+i);if(ln)ln.classList.toggle('done',i<n)})}
-function showS(n){[1,2,3].forEach(i=>document.getElementById('scr'+i).classList.toggle('hidden',i!==n));setStep(n);window.scrollTo({top:0,behavior:'smooth'})}
-
-async function callAI(msgs,mt){
-  const r=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:mt||600,messages:msgs})});
-  const d=await r.json();if(d.error)throw new Error(JSON.stringify(d.error));
-  return(d.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+}
+function showS(n){
+  for(var i=1;i<=3;i++) document.getElementById('scr'+i).classList.toggle('hidden',i!==n);
+  setStep(n);window.scrollTo({top:0,behavior:'smooth'});
 }
 
-goBtnEl.addEventListener('click',async function(){
-  goBtnEl.disabled=true;
-  goBtnEl.innerHTML='<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0"></div> Detection IA...';
-  try{
-    const raw=await callAI([{role:'user',content:'Expert CEE BAT-EQ-127. Deduis le type de chaque fichier. Fichiers: '+files.map((f,i)=>i+'."'+f.name+'"').join(', ')+'. Types: devis,facture,ah,aft,audit,rge,fiche_tech,avis_insee,photos,cadastre,att_tampon,autre,"". JSON uniquement: {"r":[{"i":0,"t":"...","c":"high|mid|none"}]}'}]);
-    const res=JSON.parse(raw).r;
-    mapped=files.map((f,i)=>{let t='',c='none';if(res&&res[i]){t=res[i].t||'';c=res[i].c||'none'}else{const r=DET.find(d=>d.k.some(k=>f.name.toLowerCase().includes(k)));if(r){t=r.v;c='mid'}}return{file:f,type:t,conf:c}});
-  }catch(e){
-    mapped=files.map(f=>{const r=DET.find(d=>d.k.some(k=>f.name.toLowerCase().includes(k)));return{file:f,type:r?r.v:'',conf:r?'mid':'none'}});
-  }
-  goBtnEl.disabled=false;
-  goBtnEl.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Suivant';
-  showS(2);rMap();rSide();
+function callAI(msgs,mt){
+  return fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:mt||600,messages:msgs})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.error)throw new Error(JSON.stringify(d.error));
+      return (d.content||[]).map(function(b){return b.text||'';}).join('').replace(/```json|```/g,'').trim();
+    });
+}
+
+goBtnEl.addEventListener('click',function(){
+  var btn=this;
+  btn.disabled=true;
+  btn.innerHTML='<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0"></div> Detection IA...';
+  mapped=[];
+  var names=files.map(function(f,i){return i+'."'+f.name+'"';}).join(', ');
+  callAI([{role:'user',content:'Expert CEE BAT-EQ-127. Deduis le type de chaque fichier. Fichiers: '+names+'. Types: devis,facture,ah,aft,audit,rge,fiche_tech,avis_insee,photos,cadastre,att_tampon,autre,"". JSON uniquement: {"r":[{"i":0,"t":"...","c":"high|mid|none"}]}'}])
+  .then(function(raw){
+    var res=JSON.parse(raw).r;
+    files.forEach(function(f,i){
+      var t='',c='none';
+      if(res&&res[i]){t=res[i].t||'';c=res[i].c||'none';}
+      else{var r=DET.find(function(d){return d.k.some(function(k){return f.name.toLowerCase().includes(k);});});if(r){t=r.v;c='mid';}}
+      mapped.push({file:f,type:t,conf:c});
+    });
+  })
+  .catch(function(){
+    files.forEach(function(f){
+      var r=DET.find(function(d){return d.k.some(function(k){return f.name.toLowerCase().includes(k);});});
+      mapped.push({file:f,type:r?r.v:'',conf:r?'mid':'none'});
+    });
+  })
+  .finally(function(){
+    btn.disabled=false;
+    btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Suivant';
+    showS(2);rMap();rSide();
+  });
 });
 
-document.getElementById('bkBtn').addEventListener('click',function(){showS(1)});
-document.getElementById('bk2Btn').addEventListener('click',function(){files.length=0;rChips();showS(1)});
+document.getElementById('bkBtn').addEventListener('click',function(){showS(1);});
+document.getElementById('bk2Btn').addEventListener('click',function(){files=[];rChips();showS(1);});
 
-function rMap(){document.getElementById('mRows').innerHTML=mapped.map((m,i)=>{const pc=m.type?(m.conf==='high'?'aip-h':'aip-m'):'aip-n';const pt=m.type?(m.conf==='high'?'IA ok':'IA ~'):'?';const opts=DT.map(t=>'<option value="'+t.v+'"'+(m.type===t.v?' selected':'')+'>'+t.l+(t.r?' *':'')+'</option>').join('');return'<div class="fr"><div class="fr-n"><span class="fr-fn">'+m.file.name+'</span><span class="aip '+pc+'">'+pt+'</span></div><div class="fr-sz">'+fsz(m.file.size)+'</div><div><select class="fr-sel '+(m.type?'ok':'empty')+'" id="sel'+i+'" onchange="upd('+i+',this.value)">'+opts+'</select></div><button class="fr-rm" onclick="rmM('+i+')">'+I.rm+'</button></div>'}).join('')}
-window.upd=function(i,v){mapped[i].type=v;mapped[i].conf='high';const s=document.getElementById('sel'+i);if(s)s.className='fr-sel '+(v?'ok':'empty');rSide()};
-window.rmM=function(i){mapped.splice(i,1);files.splice(i,1);rMap();rSide()};
+function getDTLabel(v){for(var i=0;i<DT.length;i++){if(DT[i].v===v)return DT[i].l;}return v;}
 
-function rSide(){const asgn=mapped.map(m=>m.type);let ok=0;document.getElementById('scL').innerHTML=DT2.map(d=>{const n=asgn.filter(a=>a===d.v).length;const isOk=n>0;if(isOk)ok++;const dc=isOk?(d.m?'sc-d-ml':'sc-d-ok'):'sc-d-miss';return'<div class="sc-i'+(isOk?' asgn':'')+'"><div class="sc-d '+dc+'"></div><span class="sc-n">'+d.l+(d.m?' (multi)':'')+'</span>'+(n>1?'<span class="sc-c">'+n+'x</span>':'')+'</div>'}).join('');const pct=Math.round(ok/10*100);document.getElementById('scPF').style.width=pct+'%';document.getElementById('scPT').textContent=ok+' / 10 requis'}
+function rMap(){
+  var h='';
+  for(var i=0;i<mapped.length;i++){
+    var m=mapped[i];
+    var pc=m.type?(m.conf==='high'?'aip-h':'aip-m'):'aip-n';
+    var pt=m.type?(m.conf==='high'?'IA ok':'IA ~'):'?';
+    var selCls=m.type?'ok':'empty';
+    var opts='';
+    for(var j=0;j<DT.length;j++){opts+='<option value="'+DT[j].v+'"'+(m.type===DT[j].v?' selected':'')+'>'+DT[j].l+(DT[j].r?' *':'')+'</option>';}
+    h+='<div class="fr"><div class="fr-n"><span class="fr-fn">'+m.file.name+'</span><span class="aip '+pc+'">'+pt+'</span></div><div class="fr-sz">'+fsz(m.file.size)+'</div><div><select class="fr-sel '+selCls+'" id="sel'+i+'" onchange="upd('+i+',this.value)">'+opts+'</select></div><button class="fr-rm" onclick="rmM('+i+')">'+ICR+'</button></div>';
+  }
+  document.getElementById('mRows').innerHTML=h;
+}
+function upd(i,v){mapped[i].type=v;mapped[i].conf='high';var s=document.getElementById('sel'+i);if(s)s.className='fr-sel '+(v?'ok':'empty');rSide();}
+function rmM(i){mapped.splice(i,1);files.splice(i,1);rMap();rSide();}
 
-function toB64(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f)})}
+function rSide(){
+  var asgn=mapped.map(function(m){return m.type;});
+  var ok=0,h='';
+  for(var i=0;i<DT2.length;i++){
+    var d=DT2[i];
+    var n=asgn.filter(function(a){return a===d.v;}).length;
+    var isOk=n>0;if(isOk)ok++;
+    var dc=isOk?(d.m?'sc-d-ml':'sc-d-ok'):'sc-d-miss';
+    h+='<div class="sc-i'+(isOk?' asgn':'')+'"><div class="sc-d '+dc+'"></div><span class="sc-n">'+d.l+(d.m?' (multi)':'')+'</span>'+(n>1?'<span class="sc-c">'+n+'x</span>':'')+'</div>';
+  }
+  document.getElementById('scL').innerHTML=h;
+  document.getElementById('scPF').style.width=Math.round(ok/10*100)+'%';
+  document.getElementById('scPT').textContent=ok+' / 10 requis';
+}
 
-document.getElementById('laBtn').addEventListener('click',async function(){
-  const nom=document.getElementById('nomI').value.trim()||'Dossier sans nom';
-  const ben=document.getElementById('benI').value.trim();
-  const valid=mapped.filter(m=>m.type&&m.type!=='autre');
-  if(!valid.length){alert('Assignez au moins un document.');return}
+function toB64(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result.split(',')[1]);};r.onerror=rej;r.readAsDataURL(f);});}
+
+document.getElementById('laBtn').addEventListener('click',function(){
+  var nom=document.getElementById('nomI').value.trim()||'Dossier sans nom';
+  var ben=document.getElementById('benI').value.trim();
+  var valid=mapped.filter(function(m){return m.type&&m.type!=='autre';});
+  if(!valid.length){alert('Assignez au moins un document.');return;}
   showS(3);
   document.getElementById('rZ').innerHTML='<div class="lw"><div class="lr"></div><div class="lt">Lecture des documents...</div><div class="lf" id="ldF"></div></div>';
-  const content=[];
-  for(const m of valid){
-    const el=document.getElementById('ldF');if(el)el.textContent='-> '+m.file.name;
-    try{const b64=await toB64(m.file);content.push({type:'document',source:{type:'base64',media_type:m.file.type==='application/pdf'?'application/pdf':'image/jpeg',data:b64},title:'['+(DT.find(t=>t.v===m.type)?.l||m.type)+'] '+m.file.name})}catch(e){console.warn(e)}
-  }
-  const el2=document.getElementById('ldF');if(el2)el2.textContent='Analyse de conformite en cours...';
-  content.push({type:'text',text:'Controleur expert CEE BAT-EQ-127. Dossier: '+nom+(ben?'\nBeneficiaire: '+ben:'')+'.\nDocuments:\n'+valid.map(m=>'- '+(DT.find(t=>t.v===m.type)?.l)+': '+m.file.name).join('\n')+'\n\nREGLE: une seule incoherence = NON conforme.\nCDC: Audit(tampon+signe BE+beneficiaire), Devis(date+signe+cachet), Facture, AH(cadres A), AFT(tampon+signe), RGE(valide date devis eclairage nom=audit), Fiche tech(REF=facture), Avis INSEE, Photos(horodatees geoloc dates coherentes), Cadastre. Regles: nb pieces p5=p6 BLOQUANT, LED identique(moins ok facture), RGE nom=audit, ref=fiche. Coherence: beneficiaire adresse parcelles dates(sig=date haut ou date devis) photos facture+AH designation surfaces tampon.\n\nJSON uniquement sans backtick: {"fiche":"BAT-EQ-127","titre":"Luminaires a modules LED","confiance":1-5,"statut":"conforme|non_conforme|a_controler","verdict":"PRET A ETRE VERIFIE|NON CONFORME A CORRIGER|A CONTROLER MANUELLEMENT","alerte":["..."],"synthese":"...","sections":[{"nom":"Documents","criteres":[{"label":"Audit energetique","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Devis","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Facture","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Attestation sur l'Honneur","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Attestation de Fin de Travaux","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Certificat RGE","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Fiche technique","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Avis de situation INSEE","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Photos horodatees","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Extrait cadastral","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null}]},{"nom":"Configuration","criteres":[{"label":"Parcelles","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Batiments","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Surfaces","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Cadres A AH","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null}]},{"nom":"Regles BAT-EQ-127","criteres":[{"label":"Nb pieces p5=p6","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"LED identique(facture inferieur ok)","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"RGE BE nom=audit","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"RGE valide date devis eclairage","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Ref facture=fiche technique","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Donnees techniques coherentes","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null}]},{"nom":"Coherence","criteres":[{"label":"Beneficiaire identique","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Adresse identique","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Parcelles identiques","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Dates coherentes","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Date sig audit=date audit ou devis","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Date photos=facture+AH","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Designation travaux identique","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Surfaces identiques","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Tampon ou att absence","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Secteur activite coherent","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null}]},{"nom":"Validation finale","criteres":[{"label":"Lisibilite documents","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Signatures dates tampons","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Dossier complet coherent","status":"ok|ko","detail":"...","trouve":null,"attendu":null}]}]}'});
-  try{
-    const raw=await callAI(content,3000);
+  
+  var content=[];
+  var chain=Promise.resolve();
+  valid.forEach(function(m){
+    chain=chain.then(function(){
+      var el=document.getElementById('ldF');if(el)el.textContent='-> '+m.file.name;
+      return toB64(m.file).then(function(b64){
+        content.push({type:'document',source:{type:'base64',media_type:m.file.type==='application/pdf'?'application/pdf':'image/jpeg',data:b64},title:'['+getDTLabel(m.type)+'] '+m.file.name});
+      }).catch(function(e){console.warn(e);});
+    });
+  });
+  
+  chain.then(function(){
+    var el2=document.getElementById('ldF');if(el2)el2.textContent='Analyse de conformite en cours...';
+    var docSum=valid.map(function(m){return '- '+getDTLabel(m.type)+': '+m.file.name;}).join('\n');
+    content.push({type:'text',text:'Controleur expert CEE BAT-EQ-127. Dossier: '+nom+(ben?'\nBeneficiaire: '+ben:'')+'. Documents:\n'+docSum+'\n\nREGLE: une seule incoherence = NON conforme.\nJSON uniquement sans backtick: {"fiche":"BAT-EQ-127","titre":"Luminaires a modules LED","confiance":1-5,"statut":"conforme|non_conforme|a_controler","verdict":"PRET A ETRE VERIFIE|NON CONFORME A CORRIGER|A CONTROLER MANUELLEMENT","alerte":["..."],"synthese":"...","sections":[{"nom":"Documents","criteres":[{"label":"Audit energetique","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Devis","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Facture","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Attestation sur l\'Honneur","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Attestation Fin Travaux","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Certificat RGE","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Fiche technique","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Avis de situation INSEE","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Photos horodatees","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Extrait cadastral","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null}]},{"nom":"Configuration","criteres":[{"label":"Parcelles","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Batiments","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Surfaces","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Cadres A AH","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null}]},{"nom":"Regles BAT-EQ-127","criteres":[{"label":"Nb pieces p5=p6","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"LED identique","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"RGE BE nom=audit","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"RGE valide date devis eclairage","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null},{"label":"Ref facture=fiche technique","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Donnees techniques coherentes","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null}]},{"nom":"Coherence","criteres":[{"label":"Beneficiaire identique","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Adresse identique","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Parcelles identiques","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Dates coherentes","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Date sig audit ok","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Date photos ok","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Designation identique","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Surfaces identiques","status":"ok|ko","detail":"...","trouve":null,"attendu":null},{"label":"Tampon ou att absence","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Secteur activite coherent","status":"ok|ko|warn|missing","detail":"...","trouve":null,"attendu":null}]},{"nom":"Validation finale","criteres":[{"label":"Lisibilite documents","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Signatures tampons","status":"ok|ko|warn","detail":"...","trouve":null,"attendu":null},{"label":"Dossier complet coherent","status":"ok|ko","detail":"...","trouve":null,"attendu":null}]}]}'});
+    return callAI(content,3000);
+  }).then(function(raw){
     rRes(JSON.parse(raw),nom);
-  }catch(e){
+  }).catch(function(e){
     document.getElementById('rZ').innerHTML='<div style="padding:2rem;font-family:var(--mo);font-size:12px;color:var(--cr)">Erreur: '+e.message+'</div>';
-  }
+  });
 });
 
-window.tSec=function(i){document.getElementById('sb'+i)?.classList.toggle('open');document.getElementById('sh'+i)?.classList.toggle('open');document.getElementById('sv'+i)?.classList.toggle('open')};
-function ico(s){return{ok:I.ck,ko:I.x,warn:I.wn,missing:I.ds}[s]||I.ds}
-function bdg(s){const m={ok:'cb-ok Conforme',ko:'cb-ko Non conforme',warn:'cb-wn A verifier',missing:'cb-ms Non trouve'};const p=(m[s]||'cb-ms Non trouve').split(' ');return'<span class="cbdg '+p[0]+'">'+p.slice(1).join(' ')+'</span>'}
-function cdots(n){return[1,2,3,4,5].map(i=>'<div class="cdot '+(i<=n?'on':'off')+'"></div>').join('')}
-function cLbl(n){return['','Faible','Basse','Moyenne','Elevee','Tres elevee'][n]||''}
+function tSec(i){document.getElementById('sb'+i).classList.toggle('open');document.getElementById('sh'+i).classList.toggle('open');document.getElementById('sv'+i).classList.toggle('open');}
+function ico(s){if(s==='ok')return ICK;if(s==='ko')return ICX;if(s==='warn')return ICW;return ICD;}
+function bdg(s){if(s==='ok')return '<span class="cbdg cb-ok">Conforme</span>';if(s==='ko')return '<span class="cbdg cb-ko">Non conforme</span>';if(s==='warn')return '<span class="cbdg cb-wn">A verifier</span>';return '<span class="cbdg cb-ms">Non trouve</span>';}
+function cdots(n){var h='';for(var i=1;i<=5;i++)h+='<div class="cdot '+(i<=n?'on':'off')+'"></div>';return h;}
+function cLbl(n){return['','Faible','Basse','Moyenne','Elevee','Tres elevee'][n]||'';}
 
 function rRes(r,nom){
-  const st=r.statut||'a_controler';
-  let tOk=0,tKo=0,tWn=0;
-  (r.sections||[]).forEach(s=>(s.criteres||[]).forEach(c=>{if(c.status==='ok')tOk++;else if(c.status==='ko')tKo++;else if(c.status==='warn')tWn++}));
-  const bC=st==='conforme'?'vb-ok':st==='non_conforme'?'vb-ko':'vb-wn';
-  const bL=st==='conforme'?'Conforme':st==='non_conforme'?'Non conforme':'A controler';
-  const vbC=st==='conforme'?'vban-ok':'vban-ko';
-  const secH=(r.sections||[]).map((s,si)=>{
-    const ok=(s.criteres||[]).filter(c=>c.status==='ok').length,ko=(s.criteres||[]).filter(c=>c.status==='ko').length,wn=(s.criteres||[]).filter(c=>c.status==='warn').length,tot=(s.criteres||[]).length;
-    const sc=ok+'/'+tot+(ko?' <span class="ko-t">('+ko+' KO)</span>':'')+(wn?' <span class="wn-t">('+wn+' !)</span>':'');
-    const crits=(s.criteres||[]).map(c=>{let ex='';if(c.trouve&&c.attendu)ex='<div class="crit-d"><span class="d-fo">Trouve: '+c.trouve+'</span><br><span class="d-ex">Attendu: '+c.attendu+'</span></div>';else if(c.detail)ex='<div class="crit-d">'+c.detail+'</div>';return'<div class="crit"><div class="crit-ic '+c.status+'">'+ico(c.status)+'</div><div class="crit-b"><div class="crit-l">'+c.label+'</div>'+ex+'</div>'+bdg(c.status)+'</div>'}).join('');
-    const icn=SI[s.nom]||SI['Documents'];
-    return'<div class="sec-c"><div class="sec-h open" id="sh'+si+'" onclick="tSec('+si+')"><div class="sec-ic">'+icn+'</div><div class="sec-nm">'+s.nom+'</div><div class="sec-sc">'+sc+'</div><div class="sec-cv open" id="sv'+si+'">'+I.cv+'</div></div><div class="sec-bd open" id="sb'+si+'">'+crits+'</div></div>';
-  }).join('');
+  var st=r.statut||'a_controler';
+  var tOk=0,tKo=0,tWn=0;
+  (r.sections||[]).forEach(function(s){(s.criteres||[]).forEach(function(c){if(c.status==='ok')tOk++;else if(c.status==='ko')tKo++;else if(c.status==='warn')tWn++;});});
+  var bC=st==='conforme'?'vb-ok':st==='non_conforme'?'vb-ko':'vb-wn';
+  var bL=st==='conforme'?'Conforme':st==='non_conforme'?'Non conforme':'A controler';
+  var vbC=st==='conforme'?'vban-ok':'vban-ko';
+  var secH='';
+  (r.sections||[]).forEach(function(s,si){
+    var ok=(s.criteres||[]).filter(function(c){return c.status==='ok';}).length;
+    var ko=(s.criteres||[]).filter(function(c){return c.status==='ko';}).length;
+    var wn=(s.criteres||[]).filter(function(c){return c.status==='warn';}).length;
+    var tot=(s.criteres||[]).length;
+    var sc=ok+'/'+tot+(ko?' <span class="ko-t">('+ko+' KO)</span>':'')+(wn?' <span class="wn-t">('+wn+' !)</span>':'');
+    var crits='';
+    (s.criteres||[]).forEach(function(c){
+      var ex='';
+      if(c.trouve&&c.attendu)ex='<div class="crit-d"><span class="d-fo">Trouve: '+c.trouve+'</span><br><span class="d-ex">Attendu: '+c.attendu+'</span></div>';
+      else if(c.detail)ex='<div class="crit-d">'+c.detail+'</div>';
+      crits+='<div class="crit"><div class="crit-ic '+c.status+'">'+ico(c.status)+'</div><div class="crit-b"><div class="crit-l">'+c.label+'</div>'+ex+'</div>'+bdg(c.status)+'</div>';
+    });
+    secH+='<div class="sec-c"><div class="sec-h open" id="sh'+si+'" onclick="tSec('+si+')"><div class="sec-ic">'+getSI(s.nom)+'</div><div class="sec-nm">'+s.nom+'</div><div class="sec-sc">'+sc+'</div><div class="sec-cv open" id="sv'+si+'">'+ICV+'</div></div><div class="sec-bd open" id="sb'+si+'">'+crits+'</div></div>';
+  });
   document.getElementById('rZ').innerHTML=
     '<div class="r-hdr"><div><div class="r-dos">'+nom+'</div><div class="r-fi">BAT-EQ-127 - Luminaires a modules LED</div></div><span class="vbdg '+bC+'">'+bL+'</span></div>'+
     '<div class="stats"><div class="sb sb-ok"><div class="sbn">'+tOk+'</div><div class="sbl">Conformes</div></div><div class="sb sb-wn"><div class="sbn">'+tWn+'</div><div class="sbl">A verifier</div></div><div class="sb sb-ko"><div class="sbn">'+tKo+'</div><div class="sbl">Non conformes</div></div></div>'+
     '<div class="cfs"><div class="cfl">Confiance IA</div><div class="cfd">'+cdots(r.confiance||3)+'</div><div class="cfv">'+cLbl(r.confiance||3)+'</div></div>'+
     (r.verdict?'<div class="vban '+vbC+'"><div class="vband"></div>'+r.verdict+'</div>':'')+
-    (r.alerte?.length?'<div class="alrt">Points a verifier manuellement<ul>'+r.alerte.map(a=>'<li>'+a+'</li>').join('')+'</ul></div>':'')+
+    (r.alerte&&r.alerte.length?'<div class="alrt">Points a verifier manuellement<ul>'+r.alerte.map(function(a){return '<li>'+a+'</li>';}).join('')+'</ul></div>':'')+
     (r.synthese?'<div class="syn">'+r.synthese+'</div>':'')+
     '<div class="secs">'+secH+'</div>'+
-    '<div class="act"><button class="btn-a" onclick="window.print()">Imprimer</button><button class="btn-a em" onclick="document.getElementById('bk2Btn').click()">Nouveau dossier</button></div>';
+    '<div class="act"><button class="btn-a" onclick="window.print()">Imprimer</button><button class="btn-a em" onclick="document.getElementById(\'bk2Btn\').click()">Nouveau dossier</button></div>';
 }
 </script>
 </body>
