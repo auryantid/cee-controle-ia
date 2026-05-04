@@ -279,7 +279,7 @@ document.getElementById('analyseBtn').addEventListener('click', async function()
 
   try {
     const r3 = await fetch(PROXY, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      model:'claude-sonnet-4-6', max_tokens:3000,
+      model:'claude-sonnet-4-6', max_tokens:4096,
       messages:[{role:'user',content:prompt}]
     })});
     const d3 = await r3.json();
