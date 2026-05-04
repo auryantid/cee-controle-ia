@@ -243,7 +243,7 @@ function showS(n){for(var i=1;i<=3;i++)document.getElementById('scr'+i).classLis
 
 // ===== API CALL - envoie UN SEUL fichier a la fois =====
 function callAI(msgs,mt){
-  return fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:mt||600,messages:msgs})})
+  return fetch('https://cee-proxy.auryantidghi.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:mt||600,messages:msgs})})
     .then(function(r){
       if(!r.ok)throw new Error('HTTP '+r.status);
       return r.json();
