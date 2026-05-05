@@ -2,7 +2,7 @@
   "routes": [
     {
       "src": "/v2",
-      "dest": "/index_v2.html"
+      "dest": "/index_v2_1.html"
     },
     {
       "src": "/v1",
