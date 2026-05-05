@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle CEE BAT-EQ-127 v2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f8f8f7;min-height:100vh;padding:2rem 1rem}
+.wrap{max-width:900px;margin:0 auto}
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem}
+h1{font-size:26px;font-weight:700}h1 span{color:#1a6b4a;font-style:italic}
+.sub{color:#888;font-size:12px;margin-top:4px}
+.version-badge{font-size:11px;background:#111;color:#fff;padding:4px 10px;border-radius:20px;cursor:pointer;text-decoration:none}
+.version-badge:hover{background:#333}
+.tabs{display:flex;gap:8px;margin-bottom:1.5rem}
+.tab{padding:8px 18px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:13px;font-weight:500;cursor:pointer}
+.tab.active{background:#111;color:#fff;border-color:#111}
+.card{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+label.lbl{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:6px}
+input[type=text]{width:100%;border:1px solid #e5e5e5;border-radius:8px;padding:10px 12px;font-size:14px;outline:none}
+input[type=text]:focus{border-color:#1a6b4a}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.upload-box{border:2px dashed #ddd;border-radius:12px;padding:2rem;text-align:center;transition:.2s}
+.upload-box:hover,.upload-box.drag{border-color:#1a6b4a;background:#f0faf5}
+.upload-box p{color:#666;margin-bottom:8px;font-size:14px}
+.upload-box small{color:#aaa;font-size:12px;display:block;margin-bottom:12px}
+.upload-btn{display:inline-block;background:#111;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer}
+.file-list{margin-top:.75rem;display:flex;flex-direction:column;gap:6px}
+.file-item{display:flex;align-items:center;gap:8px;background:#f5f5f5;border-radius:8px;padding:8px 12px}
+.file-icon{font-size:16px}
+.file-name{flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-size{font-size:11px;color:#aaa}
+.file-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:16px;line-height:1}
+.file-del:hover{color:#e53}
+/* BATCH */
+.batch-list{display:flex;flex-direction:column;gap:8px;margin-top:.75rem}
+.batch-item{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:12px 14px}
+.batch-header{display:flex;align-items:center;gap:10px}
+.batch-name{font-size:13px;font-weight:600;flex:1}
+.batch-count{font-size:11px;color:#888}
+.batch-status{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:600}
+.bs-wait{background:#f5f5f5;color:#888}
+.bs-run{background:#fff3e0;color:#e65100}
+.bs-done{background:#e8f5ef;color:#1a6b4a}
+.bs-err{background:#fee8e8;color:#7a1515}
+.batch-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:16px}
+.batch-del:hover{color:#e53}
+.batch-progress{height:3px;background:#eee;border-radius:2px;margin-top:8px;overflow:hidden}
+.batch-fill{height:100%;background:#1a6b4a;border-radius:2px;transition:width .3s}
+.batch-detail{font-size:11px;color:#888;margin-top:4px}
+/* Buttons */
+.btn{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-dark{background:#111;color:#fff}
+.btn-dark:hover:not(:disabled){background:#333}
+.btn-dark:disabled{background:#ddd;color:#999;cursor:not-allowed}
+.btn-green{background:#1a6b4a;color:#fff}
+.btn-green:hover:not(:disabled){background:#155a3e}
+.btn-green:disabled{background:#ddd;color:#999;cursor:not-allowed}
+.btn-row{display:flex;gap:8px}
+.btn-sm{flex:1;padding:10px;border:1px solid #ddd;background:#fff;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer}
+.btn-sm:hover{border-color:#111}
+/* Results */
+.result-wrap{margin-top:1rem}
+.result-card{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:1.25rem;margin-bottom:.75rem}
+.result-header{display:flex;align-items:center;gap:10px;margin-bottom:.75rem}
+.result-name{font-size:14px;font-weight:700;flex:1}
+.verdict{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.v-ok{background:#e8f5ef;color:#1a6b4a}
+.v-ko{background:#fee8e8;color:#7a1515}
+.v-warn{background:#fff3e0;color:#e65100}
+.mini-stats{display:flex;gap:8px;margin-bottom:.75rem}
+.mstat{flex:1;text-align:center;background:#f8f8f8;border-radius:8px;padding:8px}
+.mstat-n{font-size:22px;font-weight:700}
+.mstat-l{font-size:10px;color:#888;text-transform:uppercase}
+.ms-ok .mstat-n{color:#1a6b4a}
+.ms-warn .mstat-n{color:#e65100}
+.ms-ko .mstat-n{color:#7a1515}
+.agent-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;padding:3px 8px;border-radius:20px;margin-bottom:.75rem}
+.ab-1{background:#e3f2fd;color:#1565c0}
+.ab-2{background:#f3e5f5;color:#6a1b9a}
+.ab-3{background:#e8f5e9;color:#2e7d32}
+.section{border:1px solid #f0f0f0;border-radius:8px;margin-bottom:6px;overflow:hidden}
+.sec-h{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;background:#fafafa}
+.sec-h:hover{background:#f5f5f5}
+.sec-title{font-size:13px;font-weight:600;flex:1}
+.sec-score{font-size:11px;color:#888}
+.sec-body{padding:8px 12px;border-top:1px solid #f0f0f0}
+.crit{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #f8f8f8}
+.crit:last-child{border-bottom:none}
+.cdot{width:16px;height:16px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700;margin-top:1px}
+.c-ok{background:#1a6b4a}.c-ko{background:#c62828}.c-warn{background:#e65100}.c-miss{background:#bbb}
+.crit-label{font-size:12px;font-weight:500;flex:1}
+.crit-detail{font-size:11px;color:#888;margin-top:2px}
+.verif-note{font-size:11px;color:#6a1b9a;margin-top:3px;padding:4px 8px;background:#f3e5f5;border-radius:4px}
+.synthese{background:#f5f5f5;border-left:3px solid #111;padding:10px 14px;border-radius:0 8px 8px 0;font-size:13px;line-height:1.6;margin-bottom:.75rem}
+.alerte{background:#fff3e0;border:1px solid rgba(230,81,0,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:#e65100;margin-bottom:.75rem}
+.alerte ul{padding-left:14px;margin-top:3px}
+/* Summary table */
+.summary-table{width:100%;border-collapse:collapse;font-size:12px}
+.summary-table th{background:#f5f5f5;padding:8px 10px;text-align:left;font-weight:600;border-bottom:2px solid #e5e5e5}
+.summary-table td{padding:8px 10px;border-bottom:1px solid #f0f0f0}
+.summary-table tr:hover td{background:#fafafa}
+/* Loading */
+.loading{text-align:center;padding:3rem}
+.spinner{width:36px;height:36px;border:3px solid #eee;border-top-color:#111;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+.conf-bar{display:flex;align-items:center;gap:8px;margin-bottom:.75rem}
+.conf-label{font-size:11px;color:#888;width:80px}
+.conf-dots{display:flex;gap:3px}
+.cdot2{width:12px;height:12px;border-radius:50%}
+.cdot2.on{background:#111}.cdot2.off{background:#ddd}
+.conf-txt{font-size:11px;color:#555}
+.export-btn{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:13px;cursor:pointer}
+.export-btn:hover{border-color:#111;background:#f8f8f8}
+.top-actions{display:flex;gap:8px;margin-bottom:1rem;justify-content:flex-end}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <h1>Conformite <span>CEE</span></h1>
+      <div class="sub">BAT-EQ-127 — Luminaires a modules LED • v2.0 Multi-agent + ZIP</div>
+    </div>
+    <a href="https://cee-controle-ia-e3jk.vercel.app/v1" class="version-badge">← v1 (stable)</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('single',this)">Dossier unique</button>
+    <button class="tab" onclick="switchTab('batch',this)">Batch (ZIP) — jusqu'a 50 dossiers</button>
+    <button class="tab" onclick="switchTab('results',this)" id="resultsTab">Resultats</button>
+  </div>
+
+  <!-- TAB: SINGLE -->
+  <div id="tab-single">
+    <div id="s1">
+      <div class="card">
+        <div class="row2">
+          <div><label class="lbl">Nom du dossier</label><input type="text" id="nomI" placeholder="ex: Martin - Entrepot Roissy"></div>
+          <div><label class="lbl">Beneficiaire</label><input type="text" id="benI" placeholder="Optionnel"></div>
+        </div>
+        <div class="upload-box" id="dz1">
+          <p>Deposez vos fichiers PDF / images ici</p>
+          <small>PDF, JPG, PNG acceptes</small>
+          <label for="fi1" class="upload-btn">Choisir les fichiers</label>
+          <input type="file" id="fi1" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none">
+        </div>
+        <div class="file-list" id="flist1"></div>
+      </div>
+      <button class="btn btn-dark" id="nextBtn1" disabled onclick="goMapping()">Suivant → Assigner les types</button>
+    </div>
+
+    <div id="s2" class="hidden">
+      <div class="card">
+        <label class="lbl" style="margin-bottom:12px">Verifiez les types detectes</label>
+        <div id="mapRows"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-sm" onclick="showScreen('s1','s2')">← Retour</button>
+        <button class="btn btn-green" id="analyseBtn" style="flex:3" onclick="runSingleAnalysis()">
+          🤖 Lancer l'analyse (3 agents IA)
+        </button>
+      </div>
+    </div>
+
+    <div id="s3" class="hidden">
+      <button onclick="resetSingle()" style="background:none;border:none;cursor:pointer;color:#888;font-size:13px;margin-bottom:1rem">← Nouveau dossier</button>
+      <div id="s3zone"></div>
+    </div>
+  </div>
+
+  <!-- TAB: BATCH -->
+  <div id="tab-batch" class="hidden">
+    <div class="card">
+      <label class="lbl">Charger des dossiers ZIP</label>
+      <p style="font-size:13px;color:#666;margin-bottom:12px">Chaque ZIP = 1 dossier. Le nom du ZIP = nom du dossier. Jusqu'a 50 ZIPs simultanes.</p>
+      <div class="upload-box" id="dz2">
+        <p>Deposez vos fichiers ZIP ici</p>
+        <small>Un ZIP par dossier CEE</small>
+        <label for="fi2" class="upload-btn">Choisir les ZIPs</label>
+        <input type="file" id="fi2" multiple accept=".zip" style="display:none">
+      </div>
+      <div class="batch-list" id="batchList"></div>
+    </div>
+    <button class="btn btn-green" id="batchBtn" disabled onclick="runBatch()">
+      🚀 Lancer l'analyse batch
+    </button>
+  </div>
+
+  <!-- TAB: RESULTS -->
+  <div id="tab-results" class="hidden">
+    <div id="resultsEmpty" style="text-align:center;padding:3rem;color:#aaa">
+      <p style="font-size:14px">Aucun resultat pour l'instant.</p>
+      <p style="font-size:12px;margin-top:4px">Lancez une analyse pour voir les resultats ici.</p>
+    </div>
+    <div id="resultsContent" class="hidden">
+      <div class="top-actions">
+        <button class="export-btn" onclick="exportCSV()">📊 Export CSV</button>
+        <button class="export-btn" onclick="clearResults()">🗑 Effacer</button>
+      </div>
+      <div id="summaryZone"></div>
+      <div id="detailZone"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PROXY = 'https://cee-proxy.auryantidghi.workers.dev/';
+const TYPES = [
+  {v:'',l:'— Non assigne —'},
+  {v:'devis',l:'Devis *'},{v:'facture',l:'Facture *'},
+  {v:'ah',l:'Attestation Honneur *'},{v:'aft',l:'Attestation Fin Travaux *'},
+  {v:'audit',l:'Audit energetique *'},{v:'rge',l:'Certificat RGE *'},
+  {v:'fiche_tech',l:'Fiche technique *'},{v:'avis_insee',l:'Avis INSEE *'},
+  {v:'photos',l:'Photos horodatees *'},{v:'cadastre',l:'Extrait cadastral *'},
+  {v:'att_tampon',l:'Att. absence tampon'},{v:'autre',l:'Autre'}
+];
+const DETECT=[
+  {v:'audit',k:['audit','energetique','bilan','luminaire']},
+  {v:'devis',k:['devis','offre','proposition']},
+  {v:'facture',k:['facture','invoice']},
+  {v:'ah',k:['honneur','cadre a','attestation h']},
+  {v:'aft',k:['fin travaux','fin de travaux']},
+  {v:'rge',k:['rge','qualibat','qualifelec']},
+  {v:'fiche_tech',k:['fiche technique','datasheet']},
+  {v:'avis_insee',k:['insee','siren','siret']},
+  {v:'photos',k:['photo','horodate']},
+  {v:'cadastre',k:['cadastre','parcelle']}
+];
+
+let files1=[], mapped1=[], allResults=[], batchDossiers=[];
+
+// ============ UTILS ============
+function fsz(b){if(b<1024)return b+'o';if(b<1048576)return Math.round(b/1024)+'Ko';return(b/1048576).toFixed(1)+'Mo';}
+function det(name){const n=name.toLowerCase();for(const d of DETECT)if(d.k.some(k=>n.includes(k)))return d.v;return '';}
+function tlbl(v){return(TYPES.find(t=>t.v===v)?.l||v).replace(' *','');}
+function toB64(f){return new Promise((r,e)=>{const x=new FileReader();x.onload=()=>r(x.result.split(',')[1]);x.onerror=e;x.readAsDataURL(f);});}
+function showScreen(show,hide){document.getElementById(show).classList.remove('hidden');document.getElementById(hide).classList.add('hidden');}
+
+function switchTab(name,btn){
+  ['single','batch','results'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.add('hidden');
+  });
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.remove('hidden');
+  btn.classList.add('active');
+}
+
+// ============ SINGLE MODE ============
+function renderFiles1(){
+  document.getElementById('flist1').innerHTML=files1.map((f,i)=>`
+    <div class="file-item">
+      <span class="file-icon">${f.name.endsWith('.pdf')?'📄':'🖼'}</span>
+      <span class="file-name">${f.name}</span>
+      <span class="file-size">${fsz(f.size)}</span>
+      <button class="file-del" onclick="files1.splice(${i},1);renderFiles1()">×</button>
+    </div>`).join('');
+  document.getElementById('nextBtn1').disabled=files1.length===0;
+}
+
+document.getElementById('fi1').addEventListener('change',function(){
+  if(this.files)Array.from(this.files).forEach(f=>{if(!files1.find(x=>x.name===f.name))files1.push(f);});
+  this.value='';renderFiles1();
+});
+setupDrop('dz1',f=>{if(!files1.find(x=>x.name===f.name))files1.push(f);renderFiles1();});
+
+async function goMapping(){
+  document.getElementById('nextBtn1').disabled=true;
+  document.getElementById('nextBtn1').textContent='Detection IA...';
+  mapped1=files1.map(f=>({file:f,type:det(f.name)}));
+  try{
+    const r=await callProxy({model:'claude-haiku-4-5-20251001',max_tokens:300,
+      messages:[{role:'user',content:'Detecte type CEE: '+files1.map((f,i)=>i+'="'+f.name+'"').join(',')+'. Types: devis,facture,ah,aft,audit,rge,fiche_tech,avis_insee,photos,cadastre,autre,"". JSON: {"r":[{"i":0,"t":"type"}]}'}]});
+    if(r.content){const res=JSON.parse(r.content[0].text.replace(/```json|```/g,'')).r;
+      mapped1=files1.map((f,i)=>({file:f,type:(res[i]?.t)||det(f.name)}));}
+  }catch(e){}
+  document.getElementById('nextBtn1').disabled=false;
+  document.getElementById('nextBtn1').textContent='Suivant → Assigner les types';
+  renderMapping();showScreen('s2','s1');
+}
+
+function renderMapping(){
+  document.getElementById('mapRows').innerHTML=mapped1.map((m,i)=>`
+    <div style="display:grid;grid-template-columns:1fr 70px 170px;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;align-items:center">
+      <span style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.file.name}</span>
+      <span style="font-size:11px;color:#aaa">${fsz(m.file.size)}</span>
+      <select style="border:1px solid ${m.type?'#1a6b4a':'#e53'};border-radius:8px;padding:6px;font-size:11px" onchange="mapped1[${i}].type=this.value;this.style.borderColor=this.value?'#1a6b4a':'#e53'">
+        ${TYPES.map(t=>`<option value="${t.v}"${m.type===t.v?' selected':''}>${t.l}</option>`).join('')}
+      </select>
+    </div>`).join('');
+}
+
+async function runSingleAnalysis(){
+  const nom=document.getElementById('nomI').value.trim()||'Dossier sans nom';
+  const ben=document.getElementById('benI').value.trim();
+  const valid=mapped1.filter(m=>m.type&&m.type!=='autre');
+  if(!valid.length){alert('Assignez au moins un type.');return;}
+  showScreen('s3','s2');
+  const zone=document.getElementById('s3zone');
+  zone.innerHTML=`<div class="loading"><div class="spinner"></div><p id="loadMsg">Agent 1 — Extraction des documents...</p>
+    <div style="height:4px;background:#eee;border-radius:2px;margin-top:10px;width:300px;margin-left:auto;margin-right:auto">
+      <div id="lprog" style="height:100%;background:#1a6b4a;border-radius:2px;transition:width .3s;width:0%"></div>
+    </div></div>`;
+  const result = await analyzeOneDossier(nom, ben, valid, (pct,msg)=>{
+    const p=document.getElementById('lprog'); if(p)p.style.width=pct+'%';
+    const m=document.getElementById('loadMsg'); if(m)m.textContent=msg;
+  });
+  allResults.unshift(result);
+  renderResultSingle(result, zone);
+  updateResultsTab();
+}
+
+function resetSingle(){files1=[];mapped1=[];renderFiles1();showScreen('s1','s3');}
+
+// ============ BATCH MODE ============
+document.getElementById('fi2').addEventListener('change',function(){
+  if(this.files)Array.from(this.files).forEach(addZip);
+  this.value='';
+});
+setupDrop('dz2',f=>{if(f.name.endsWith('.zip'))addZip(f);});
+
+function addZip(f){
+  if(batchDossiers.find(d=>d.zipName===f.name))return;
+  if(batchDossiers.length>=50){alert('Maximum 50 dossiers.');return;}
+  batchDossiers.push({zipName:f.name,dosName:f.name.replace(/\.zip$/i,''),file:f,status:'wait',result:null});
+  renderBatchList();
+}
+
+function renderBatchList(){
+  document.getElementById('batchList').innerHTML=batchDossiers.map((d,i)=>`
+    <div class="batch-item" id="bi${i}">
+      <div class="batch-header">
+        <span style="font-size:16px">📦</span>
+        <span class="batch-name">${d.dosName}</span>
+        <span class="batch-count">${d.fileCount?d.fileCount+' fichiers':d.zipName}</span>
+        <span class="batch-status bs-${d.status}">${{wait:'En attente',run:'En cours...',done:'✓ Terminé',err:'✗ Erreur'}[d.status]}</span>
+        ${d.status==='wait'?`<button class="batch-del" onclick="batchDossiers.splice(${i},1);renderBatchList()">×</button>`:''}
+      </div>
+      ${d.status==='run'?`<div class="batch-progress"><div class="batch-fill" style="width:${d.pct||0}%"></div></div><div class="batch-detail">${d.msg||''}</div>`:''}
+      ${d.status==='done'&&d.result?`<div class="batch-detail" style="color:${d.result.statut==='conforme'?'#1a6b4a':d.result.statut==='non_conforme'?'#c62828':'#e65100'}">${d.result.statut==='conforme'?'✓ Conforme':d.result.statut==='non_conforme'?'✗ Non conforme':'⚠ A controler'}</div>`:''}
+    </div>`).join('');
+  document.getElementById('batchBtn').disabled=batchDossiers.length===0||batchDossiers.every(d=>d.status==='done');
+}
+
+async function runBatch(){
+  const btn=document.getElementById('batchBtn');
+  btn.disabled=true;
+  const waiting=batchDossiers.filter(d=>d.status==='wait');
+  // Traitement par groupes de 5 en parallele
+  const PARALLEL=5;
+  for(let i=0;i<waiting.length;i+=PARALLEL){
+    const chunk=waiting.slice(i,i+PARALLEL);
+    await Promise.all(chunk.map(d=>processBatchItem(d)));
+  }
+  btn.disabled=false;
+  // Aller sur l'onglet resultats
+  document.querySelector('.tab:nth-child(3)').click();
+  updateResultsTab();
+}
+
+async function processBatchItem(d){
+  d.status='run';d.pct=0;d.msg='Lecture du ZIP...';renderBatchList();
+  try{
+    // Extraire le ZIP
+    const zip=await JSZip.loadAsync(d.file);
+    const files=[];
+    for(const [name,entry] of Object.entries(zip.files)){
+      if(entry.dir)continue;
+      const ext=name.split('.').pop().toLowerCase();
+      if(!['pdf','jpg','jpeg','png'].includes(ext))continue;
+      const blob=await entry.async('blob');
+      const fname=name.split('/').pop();
+      files.push(new File([blob],fname,{type:ext==='pdf'?'application/pdf':'image/jpeg'}));
+    }
+    d.fileCount=files.length;
+    if(!files.length){d.status='err';d.msg='Aucun PDF/image dans le ZIP';renderBatchList();return;}
+    const mapped=files.map(f=>({file:f,type:det(f.name)}));
+    const result=await analyzeOneDossier(d.dosName,'',mapped,(pct,msg)=>{
+      d.pct=pct;d.msg=msg;renderBatchList();
+    });
+    d.result=result;d.status='done';allResults.push(result);
+  }catch(e){d.status='err';d.msg=e.message;}
+  renderBatchList();
+}
+
+// ============ CORE: 3-AGENT ANALYSIS ============
+async function analyzeOneDossier(nom, ben, valid, onProgress){
+  // AGENT 1: Extraction
+  const extraits=[];
+  for(let i=0;i<valid.length;i++){
+    onProgress(Math.round(i/valid.length*50), `Agent 1/3 — Lecture ${i+1}/${valid.length}: ${valid[i].file.name}`);
+    try{
+      const b64=await toB64(valid[i].file);
+      const mt=valid[i].file.type==='application/pdf'?'application/pdf':'image/jpeg';
+      const r=await callProxy({model:'claude-haiku-4-5-20251001',max_tokens:600,
+        messages:[{role:'user',content:[
+          {type:'document',source:{type:'base64',media_type:mt,data:b64}},
+          {type:'text',text:'Document CEE type: '+tlbl(valid[i].type)+'. Extrais en 250 mots: noms, dates, references, adresses, montants, donnees techniques, signatures/tampons, nb pieces si audit.'}
+        ]}]});
+      extraits.push('=== '+tlbl(valid[i].type)+' ('+valid[i].file.name+') ===\n'+(r.content?r.content[0].text:'Erreur lecture'));
+    }catch(e){extraits.push('=== '+valid[i].file.name+' ===\nErreur: '+e.message);}
+  }
+
+  // AGENT 2: Controle CDC
+  onProgress(60,'Agent 2/3 — Controle de conformite CDC...');
+  const docsTxt='Dossier: '+nom+(ben?'\nBeneficiaire: '+ben:'')+'\n\n'+extraits.join('\n\n');
+  const prompt2=docsTxt+'\n\nCONTROLE CDC BAT-EQ-127:\n- Audit: tampon+signature BE+beneficiaire, nb pieces p5=p6 BLOQUANT\n- Devis: date+signature+cachet\n- AH: cadres A conformes\n- AFT: tampon+signature\n- RGE: valide date devis, eclairage, nom BE=audit\n- Fiche tech: reference=facture\n- Coherence: beneficiaire/adresse/dates/parcelles/surfaces\n\nJSON sans backtick:\n{"statut":"conforme|non_conforme|a_controler","verdict":"...","synthese":"...","confiance":1-5,"alerte":["..."],"sections":[{"nom":"Documents","criteres":[{"label":"Audit energetique","status":"ok|ko|warn|missing","detail":"..."},{"label":"Devis","status":"ok|ko|warn|missing","detail":"..."},{"label":"Facture","status":"ok|ko|warn|missing","detail":"..."},{"label":"Attestation Honneur","status":"ok|ko|warn|missing","detail":"..."},{"label":"Attestation Fin Travaux","status":"ok|ko|warn|missing","detail":"..."},{"label":"Certificat RGE","status":"ok|ko|warn|missing","detail":"..."},{"label":"Fiche technique","status":"ok|ko|warn|missing","detail":"..."},{"label":"Avis INSEE","status":"ok|ko|warn|missing","detail":"..."},{"label":"Photos horodatees","status":"ok|ko|warn|missing","detail":"..."},{"label":"Extrait cadastral","status":"ok|ko|warn|missing","detail":"..."}]},{"nom":"Regles BAT-EQ-127","criteres":[{"label":"Nb pieces p5=p6","status":"ok|ko","detail":"..."},{"label":"LED identique","status":"ok|ko|warn","detail":"..."},{"label":"RGE valide et conforme","status":"ok|ko|warn|missing","detail":"..."},{"label":"Reference facture=fiche","status":"ok|ko|warn","detail":"..."}]},{"nom":"Coherence globale","criteres":[{"label":"Beneficiaire identique","status":"ok|ko","detail":"..."},{"label":"Adresse identique","status":"ok|ko","detail":"..."},{"label":"Dates coherentes","status":"ok|ko|warn","detail":"..."},{"label":"Surfaces identiques","status":"ok|ko","detail":"..."},{"label":"Tampons et signatures","status":"ok|ko|warn","detail":"..."}]}]}';
+
+  let agent2Result=null;
+  try{
+    const r2=await callProxy({model:'claude-sonnet-4-6',max_tokens:4096,messages:[{role:'user',content:prompt2}]});
+    if(r2.error)throw new Error(r2.error.message||JSON.stringify(r2.error));
+    agent2Result=parseJSON(r2.content[0].text);
+  }catch(e){return {nom,statut:'a_controler',verdict:'Erreur Agent 2: '+e.message,synthese:'',sections:[],agent2Error:e.message};}
+
+  // AGENT 3: Verification
+  onProgress(80,'Agent 3/3 — Verification independante...');
+  const prompt3='Tu es un verificateur independant.\n\nDOCUMENTS ORIGINAUX:\n'+extraits.join('\n\n')+'\n\nRAPPORT AGENT 2:\n'+JSON.stringify(agent2Result)+'\n\nTA MISSION:\n1. Verifie chaque critere "ok" du rapport: est-il vraiment conforme selon les documents?\n2. Verifie chaque critere "ko": est-ce vraiment non-conforme?\n3. Signale toute erreur ou oubli\n4. Donne ta propre conclusion\n\nJSON sans backtick:\n{"accord_global":true,"corrections":[{"label":"nom du critere","ancien_status":"ok|ko|warn|missing","nouveau_status":"ok|ko|warn|missing","raison":"..."}],"points_manques":["..."],"statut_final":"conforme|non_conforme|a_controler","note_verification":"commentaire global du verificateur","confiance_finale":1-5}';
+
+  let agent3Result=null;
+  try{
+    const r3=await callProxy({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:prompt3}]});
+    if(!r3.error)agent3Result=parseJSON(r3.content[0].text);
+  }catch(e){agent3Result={accord_global:true,corrections:[],note_verification:'Verification non disponible: '+e.message};}
+
+  // Fusionner les corrections de l'Agent 3 dans le rapport Agent 2
+  if(agent3Result?.corrections?.length){
+    for(const corr of agent3Result.corrections){
+      for(const sec of (agent2Result.sections||[])){
+        const crit=sec.criteres?.find(c=>c.label===corr.label);
+        if(crit){
+          crit.ancien_status=crit.status;
+          crit.status=corr.nouveau_status;
+          crit.verif_note=corr.raison;
+        }
+      }
+    }
+  }
+  if(agent3Result?.statut_final)agent2Result.statut=agent3Result.statut_final;
+  if(agent3Result?.confiance_finale)agent2Result.confiance=agent3Result.confiance_finale;
+  agent2Result.agent3=agent3Result;
+  agent2Result.nom=nom;
+  agent2Result.date=new Date().toLocaleDateString('fr-FR');
+
+  onProgress(100,'Analyse terminee !');
+  return agent2Result;
+}
+
+// ============ API CALL ============
+async function callProxy(body){
+  const r=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  return r.json();
+}
+
+function parseJSON(txt){
+  let t=txt.replace(/```json|```/g,'').trim();
+  const s=t.indexOf('{');if(s>0)t=t.substring(s);
+  try{return JSON.parse(t);}catch(e){
+    let d=0,a=0;
+    for(const c of t){if(c==='{')d++;if(c==='}')d--;if(c==='[')a++;if(c===']')a--;}
+    let comp='';
+    const last=t.trimEnd().slice(-1);
+    if(!['"','}',']'].includes(last))comp+='"';
+    for(let i=0;i<a;i++)comp+=']';
+    for(let i=0;i<d;i++)comp+='}';
+    return JSON.parse(t+comp);
+  }
+}
+
+// ============ RENDER RESULTS ============
+function renderResultSingle(r, container){
+  container.innerHTML=renderOneResult(r);
+}
+
+function renderOneResult(r){
+  const st=r.statut||'a_controler';
+  let ok=0,ko=0,warn=0;
+  (r.sections||[]).forEach(s=>(s.criteres||[]).forEach(c=>{
+    if(c.status==='ok')ok++;else if(c.status==='ko')ko++;else if(c.status==='warn')warn++;
+  }));
+  const vC=st==='conforme'?'v-ok':st==='non_conforme'?'v-ko':'v-warn';
+  const vT=st==='conforme'?'Conforme':st==='non_conforme'?'Non conforme':'A controler';
+  const corrCount=(r.agent3?.corrections||[]).length;
+
+  let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+    <div><strong style="font-size:16px">${r.nom||'Dossier'}</strong><br><span style="font-size:11px;color:#888">BAT-EQ-127 • ${r.date||''}</span></div>
+    <span class="verdict ${vC}">${vT}</span>
+  </div>`;
+
+  // Badges agents
+  html+=`<div style="display:flex;gap:6px;margin-bottom:.75rem">
+    <span class="agent-badge ab-1">🤖 Agent 1: Extraction (Haiku)</span>
+    <span class="agent-badge ab-2">🔍 Agent 2: Controle CDC (Sonnet)</span>
+    <span class="agent-badge ab-3">✅ Agent 3: Verification (Sonnet)${corrCount?' — '+corrCount+' correction(s)':' — OK'}</span>
+  </div>`;
+
+  // Confiance
+  const conf=r.confiance||3;
+  html+=`<div class="conf-bar"><span class="conf-label">Confiance IA</span><div class="conf-dots">${[1,2,3,4,5].map(i=>`<div class="cdot2 ${i<=conf?'on':'off'}"></div>`).join('')}</div><span class="conf-txt">${['','Faible','Basse','Moyenne','Elevee','Tres elevee'][conf]||''}</span></div>`;
+
+  // Stats
+  html+=`<div class="mini-stats">
+    <div class="mstat ms-ok"><div class="mstat-n">${ok}</div><div class="mstat-l">Conformes</div></div>
+    <div class="mstat ms-warn"><div class="mstat-n">${warn}</div><div class="mstat-l">A verifier</div></div>
+    <div class="mstat ms-ko"><div class="mstat-n">${ko}</div><div class="mstat-l">Non conformes</div></div>
+  </div>`;
+
+  if(r.verdict)html+=`<div style="background:${st==='conforme'?'#e8f5ef':st==='non_conforme'?'#fee8e8':'#fff3e0'};padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:.75rem">${r.verdict}</div>`;
+  if(r.alerte?.length)html+=`<div class="alerte">⚠ Points a verifier:<ul>${r.alerte.map(a=>'<li>'+a+'</li>').join('')}</ul></div>`;
+  if(r.synthese)html+=`<div class="synthese">${r.synthese}</div>`;
+
+  // Note Agent 3
+  if(r.agent3?.note_verification)html+=`<div style="background:#f3e5f5;border-left:3px solid #9c27b0;padding:10px 14px;border-radius:0 8px 8px 0;font-size:12px;color:#6a1b9a;margin-bottom:.75rem"><strong>🔬 Note du verificateur:</strong> ${r.agent3.note_verification}</div>`;
+
+  // Sections
+  (r.sections||[]).forEach((s,si)=>{
+    const sok=(s.criteres||[]).filter(c=>c.status==='ok').length;
+    const sko=(s.criteres||[]).filter(c=>c.status==='ko').length;
+    html+=`<div class="section"><div class="sec-h" onclick="this.nextElementSibling.classList.toggle('hidden')">
+      <span class="sec-title">${s.nom}</span>
+      <span class="sec-score">${sok}/${(s.criteres||[]).length}${sko?' — <span style="color:#c62828">'+sko+' KO</span>':''}</span>
+    </div><div class="sec-body">`;
+    (s.criteres||[]).forEach(c=>{
+      const cls={ok:'c-ok',ko:'c-ko',warn:'c-warn',missing:'c-miss'}[c.status]||'c-miss';
+      const lbl={ok:'✓',ko:'✗',warn:'!',missing:'—'}[c.status]||'—';
+      const corrected=c.ancien_status&&c.ancien_status!==c.status;
+      html+=`<div class="crit">
+        <div class="cdot ${cls}">${lbl}</div>
+        <div style="flex:1">
+          <div class="crit-label">${c.label}${corrected?` <span style="font-size:10px;color:#9c27b0">(corrigé: ${c.ancien_status}→${c.status})</span>`:''}</div>
+          ${c.detail?'<div class="crit-detail">'+c.detail+'</div>':''}
+          ${c.verif_note?'<div class="verif-note">🔬 '+c.verif_note+'</div>':''}
+        </div>
+      </div>`;
+    });
+    html+='</div></div>';
+  });
+
+  html+=`<div style="display:flex;gap:8px;margin-top:1rem">
+    <button class="export-btn" onclick="window.print()">🖨 Imprimer</button>
+  </div>`;
+
+  return `<div class="result-card">${html}</div>`;
+}
+
+function updateResultsTab(){
+  if(!allResults.length)return;
+  document.getElementById('resultsEmpty').classList.add('hidden');
+  document.getElementById('resultsContent').classList.remove('hidden');
+  // Summary table
+  const total=allResults.length;
+  const conf=allResults.filter(r=>r.statut==='conforme').length;
+  const ko=allResults.filter(r=>r.statut==='non_conforme').length;
+  const warn=allResults.filter(r=>r.statut==='a_controler').length;
+  document.getElementById('summaryZone').innerHTML=`
+    <div class="card" style="margin-bottom:1rem">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1rem">
+        <div class="mstat"><div class="mstat-n">${total}</div><div class="mstat-l">Total</div></div>
+        <div class="mstat ms-ok"><div class="mstat-n">${conf}</div><div class="mstat-l">Conformes</div></div>
+        <div class="mstat ms-ko"><div class="mstat-n">${ko}</div><div class="mstat-l">Non conformes</div></div>
+        <div class="mstat ms-warn"><div class="mstat-n">${warn}</div><div class="mstat-l">A controler</div></div>
+      </div>
+      <table class="summary-table">
+        <tr><th>Dossier</th><th>Date</th><th>Statut</th><th>Confiance</th><th>KO</th></tr>
+        ${allResults.map(r=>{
+          const rko=(r.sections||[]).reduce((acc,s)=>acc+(s.criteres||[]).filter(c=>c.status==='ko').length,0);
+          const vC=r.statut==='conforme'?'#1a6b4a':r.statut==='non_conforme'?'#c62828':'#e65100';
+          const vT=r.statut==='conforme'?'✓ Conforme':r.statut==='non_conforme'?'✗ Non conforme':'⚠ A controler';
+          return `<tr><td><strong>${r.nom}</strong></td><td>${r.date||''}</td><td style="color:${vC};font-weight:600">${vT}</td><td>${'●'.repeat(r.confiance||3)+'○'.repeat(5-(r.confiance||3))}</td><td>${rko?`<span style="color:#c62828;font-weight:600">${rko}</span>`:'0'}</td></tr>`;
+        }).join('')}
+      </table>
+    </div>`;
+  document.getElementById('detailZone').innerHTML=allResults.map(r=>`<div>${renderOneResult(r)}</div>`).join('');
+}
+
+function clearResults(){if(confirm('Effacer tous les resultats ?')){allResults=[];updateResultsTab();document.getElementById('resultsEmpty').classList.remove('hidden');document.getElementById('resultsContent').classList.add('hidden');}}
+
+function exportCSV(){
+  const rows=[['Dossier','Date','Statut','Confiance','OK','KO','A verifier','Verdict']];
+  allResults.forEach(r=>{
+    let ok=0,ko=0,w=0;
+    (r.sections||[]).forEach(s=>(s.criteres||[]).forEach(c=>{if(c.status==='ok')ok++;else if(c.status==='ko')ko++;else if(c.status==='warn')w++;}));
+    rows.push([r.nom,r.date||'',r.statut,r.confiance||3,ok,ko,w,(r.verdict||'').replace(/,/g,' ')]);
+  });
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='controle_cee_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+
+// ============ DRAG & DROP ============
+function setupDrop(id, onFile){
+  const el=document.getElementById(id);
+  el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('drag');});
+  el.addEventListener('dragleave',()=>el.classList.remove('drag'));
+  el.addEventListener('drop',e=>{
+    e.preventDefault();el.classList.remove('drag');
+    Array.from(e.dataTransfer.files).forEach(onFile);
+  });
+}
+</script>
+</body>
+</html>
