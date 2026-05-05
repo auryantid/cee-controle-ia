@@ -580,17 +580,32 @@ function updateResultsTab(){
 function clearResults(){if(confirm('Effacer tous les resultats ?')){allResults=[];updateResultsTab();document.getElementById('resultsEmpty').classList.remove('hidden');document.getElementById('resultsContent').classList.add('hidden');}}
 
 function exportCSV(){
-  const rows=[['Dossier','Date','Statut','Confiance','OK','KO','A verifier','Verdict']];
-  allResults.forEach(r=>{
-    let ok=0,ko=0,w=0;
-    (r.sections||[]).forEach(s=>(s.criteres||[]).forEach(c=>{if(c.status==='ok')ok++;else if(c.status==='ko')ko++;else if(c.status==='warn')w++;}));
-    rows.push([r.nom,r.date||'',r.statut,r.confiance||3,ok,ko,w,(r.verdict||'').replace(/,/g,' ')]);
+  const rows=[['DOSSIER','DATE','STATUT','CONFIANCE /5','OK','KO','A VERIFIER','VERDICT','SYNTHESE BREVE','ERREURS (KO)','POINTS A VERIFIER','CORRECTIONS VERIFICATEUR']];
+  allResults.forEach(function(r){
+    var ok=0,ko=0,w=0,errs=[],warns=[],corrs=[];
+    (r.sections||[]).forEach(function(s){(s.criteres||[]).forEach(function(c){
+      if(c.status==='ok')ok++;
+      else if(c.status==='ko'){ko++;errs.push('['+s.nom+'] '+c.label+(c.detail?' - '+c.detail.substring(0,50):''));}
+      else if(c.status==='warn'||c.status==='missing'){w++;warns.push('['+s.nom+'] '+c.label+(c.status==='missing'?' (manquant)':''));}
+      if(c.ancien_status&&c.ancien_status!==c.status)corrs.push(c.label+': '+c.ancien_status+' -> '+c.status);
+    });});
+    rows.push([r.nom,r.date||'',r.statut==='conforme'?'CONFORME':r.statut==='non_conforme'?'NON CONFORME':'A CONTROLER',r.confiance||3,ok,ko,w,(r.verdict||'').replace(/[;"]/g,' '),(r.synthese||'').substring(0,150).replace(/[;"]/g,' '),errs.length?errs.join(' | '):'RAS',warns.length?warns.join(' | '):'RAS',corrs.length?corrs.join(' | '):'Aucune']);
   });
-  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='controle_cee_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  rows.push([]);
+  rows.push(['=== RESUME NON-CONFORMITES ===']);
+  allResults.filter(function(r){return r.statut==='non_conforme';}).forEach(function(r){
+    rows.push(['>>> '+r.nom+' <<<']);
+    (r.sections||[]).forEach(function(s){(s.criteres||[]).forEach(function(c){if(c.status==='ko')rows.push(['','',s.nom,'KO',c.label,(c.detail||'').substring(0,100)]);});});
+  });
+  rows.push([]);
+  rows.push(['=== RESUME A CONTROLER ===']);
+  allResults.filter(function(r){return r.statut==='a_controler';}).forEach(function(r){
+    rows.push(['>>> '+r.nom+' <<<']);
+    (r.sections||[]).forEach(function(s){(s.criteres||[]).forEach(function(c){if(c.status==='warn'||c.status==='missing')rows.push(['','',s.nom,'!',c.label,(c.detail||'').substring(0,100)]);});});
+  });
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c||'').replace(/"/g,"''")+'"';}).join(',');}).join('\n');
+  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='controle_cee_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
-
-// ============ DRAG & DROP ============
 function setupDrop(id, onFile){
   const el=document.getElementById(id);
   el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('drag');});
