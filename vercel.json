@@ -1,6 +1,10 @@
 {
   "routes": [
     {
+      "src": "/v3",
+      "dest": "/index_v3.html"
+    },
+    {
       "src": "/v2",
       "dest": "/index_v2_1.html"
     },
